@@ -1,0 +1,1167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopping Cart Microservices</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+:root {
+  --ground: #f3f5f4;
+  --surface: #ffffff;
+  --surface-2: #f7f9f8;
+  --ink: #12181a;
+  --ink-soft: #4d5a5d;
+  --ink-faint: #7c8a8d;
+  --line: #d9e0df;
+  --accent: #0f6f70;
+  --accent-ink: #0d5f60;
+  --accent-wash: #e2eeee;
+  --good: #146c4a;
+  --good-wash: #e3f1ea;
+  --warn: #8a5108;
+  --warn-wash: #fbf0e2;
+  --bad: #9a2f2f;
+  --bad-wash: #f8e8e8;
+  --code-bg: #11181b;
+  --code-ink: #dde5e6;
+  --kw: #7fc4d4;
+  --str: #9ed69c;
+  --num: #e2b477;
+  --cmt: #6b7c80;
+  --typ: #8fd0c0;
+  --ann: #d2a3d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1012;
+    --surface: #131a1d;
+    --surface-2: #182124;
+    --ink: #e5ecec;
+    --ink-soft: #a0aeb0;
+    --ink-faint: #78888b;
+    --line: #253134;
+    --accent: #4fb3b3;
+    --accent-ink: #6fc9c8;
+    --accent-wash: #12292b;
+    --good: #56be91;
+    --good-wash: #10281f;
+    --warn: #d9963f;
+    --warn-wash: #2a2012;
+    --bad: #d97070;
+    --bad-wash: #2a1414;
+    --code-bg: #080d0f;
+    --code-ink: #dde5e6;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1012;
+  --surface: #131a1d;
+  --surface-2: #182124;
+  --ink: #e5ecec;
+  --ink-soft: #a0aeb0;
+  --ink-faint: #78888b;
+  --line: #253134;
+  --accent: #4fb3b3;
+  --accent-ink: #6fc9c8;
+  --accent-wash: #12292b;
+  --good: #56be91;
+  --good-wash: #10281f;
+  --warn: #d9963f;
+  --warn-wash: #2a2012;
+  --bad: #d97070;
+  --bad-wash: #2a1414;
+  --code-bg: #080d0f;
+  --code-ink: #dde5e6;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  font-size: 16.5px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: Archivo, "Source Sans 3", sans-serif; letter-spacing: -0.015em; }
+a { color: var(--accent-ink); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.86em; }
+p code, li code, td code, span code {
+  background: var(--accent-wash); color: var(--accent-ink); padding: .1em .34em; border-radius: 3px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+/* masthead */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); padding: 52px 0 40px; }
+.eyebrow {
+  font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 14px;
+}
+h1 { font-size: clamp(2.2rem, 5vw, 3.3rem); font-weight: 700; margin: 0; line-height: 1.04; text-wrap: balance; }
+.sub { margin: 14px 0 0; max-width: 56ch; font-size: 1.08rem; color: var(--ink-soft); }
+.facts { display: flex; flex-wrap: wrap; gap: 30px; margin: 28px 0 0; }
+.facts div { display: grid; gap: 1px; }
+.facts dt {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 0;
+}
+.facts dd { margin: 0; font-weight: 600; font-size: 14.5px; }
+
+/* layout */
+.layout { max-width: 1180px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; }
+.toc { position: relative; }
+.toc-inner { position: sticky; top: 24px; padding: 40px 0; display: grid; gap: 2px; }
+.toc-head {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 0 0 8px;
+}
+.toc a {
+  display: block; padding: 5px 10px; font-size: 13.5px; color: var(--ink-soft);
+  text-decoration: none; border-left: 2px solid var(--line); line-height: 1.35;
+}
+.toc a:hover { color: var(--ink); }
+.toc a.on { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 600; }
+
+main { padding: 40px 0 100px; min-width: 0; }
+section { padding-top: 26px; margin-bottom: 46px; }
+section h2 { font-size: 1.85rem; font-weight: 700; margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+section h3 { font-size: 1.18rem; font-weight: 600; margin: 34px 0 12px; }
+section h4 { font-size: 1.02rem; font-weight: 600; margin: 0 0 6px; }
+section p { max-width: 70ch; }
+.lede { font-size: 1.12rem; color: var(--ink-soft); }
+
+/* code */
+figure.code { margin: 16px 0 20px; }
+figure.code figcaption {
+  font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-soft);
+  background: var(--surface-2); border: 1px solid var(--line); border-bottom: 0;
+  border-radius: 6px 6px 0 0; padding: 7px 12px; overflow-x: auto; white-space: nowrap;
+}
+pre {
+  margin: 0; background: var(--code-bg); color: var(--code-ink); border-radius: 6px;
+  padding: 14px 16px; overflow-x: auto; font-size: 12.6px; line-height: 1.6;
+}
+figure.code pre { border-radius: 0 0 6px 6px; }
+pre code { font-size: inherit; background: none; color: inherit; padding: 0; }
+.hljs-keyword, .hljs-built_in { color: var(--kw); }
+.hljs-string { color: var(--str); }
+.hljs-number, .hljs-literal { color: var(--num); }
+.hljs-comment, .hljs-doctag { color: var(--cmt); font-style: italic; }
+.hljs-title, .hljs-title.class_, .hljs-title.function_, .hljs-type { color: var(--typ); }
+.hljs-meta, .hljs-attr { color: var(--ann); }
+
+/* examples */
+.example { border: 1px solid var(--line); border-radius: 7px; margin: 18px 0 22px; background: var(--surface); overflow: hidden; }
+.ex-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.ex-title { font-weight: 600; font-size: 14.5px; }
+.ex-code { font-family: "JetBrains Mono", monospace; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 3px; }
+.ex-code.good { color: var(--good); background: var(--good-wash); }
+.ex-code.warn { color: var(--warn); background: var(--warn-wash); }
+.ex-code.bad { color: var(--bad); background: var(--bad-wash); }
+.ex-note { margin: 12px 14px 0; font-size: 14.5px; color: var(--ink-soft); max-width: 68ch; }
+.ex-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; padding: 14px; }
+.ex-label {
+  display: block; font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px;
+}
+.ex-pair pre { font-size: 12px; max-height: 320px; }
+
+/* diagrams */
+figure.diagram { margin: 24px 0; padding: 22px 18px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+figure.diagram svg { display: block; width: 100%; max-width: 100%; height: auto; color: var(--ink); }
+figure.diagram figcaption { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--ink-soft); max-width: 74ch; }
+
+/* tables */
+table.grid { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 14.5px; display: block; overflow-x: auto; }
+table.grid thead th {
+  text-align: left; font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
+  border-bottom: 1px solid var(--line); padding: 8px 12px 8px 0; white-space: nowrap;
+}
+table.grid td { padding: 7px 12px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.grid.api td:nth-child(1) { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--accent-ink); white-space: nowrap; }
+table.grid td.pub { color: var(--good); }
+
+/* roles */
+.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 22px 0; }
+.roles > div { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 14px 16px; }
+.roles h4 { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .06em; color: var(--accent-ink); margin-bottom: 6px; }
+.roles p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
+/* callouts */
+.callout { border-left: 3px solid var(--accent); background: var(--accent-wash); padding: 14px 18px; border-radius: 0 6px 6px 0; margin: 22px 0; }
+.callout.warn { border-left-color: var(--warn); background: var(--warn-wash); }
+.callout h4 { margin: 0 0 5px; }
+.callout p { margin: 0; font-size: 14.5px; }
+
+/* steps */
+.steps { display: grid; gap: 8px; margin: 22px 0; }
+.step { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 16px 18px; }
+.step .n {
+  font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 500; color: var(--accent-ink);
+  background: var(--accent-wash); width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+}
+.step p { margin: 0 0 9px; font-size: 14.7px; }
+.step p:last-child { margin-bottom: 0; }
+.step pre { margin: 9px 0; }
+.order { margin: 6px 0 9px; padding-left: 20px; font-size: 14.7px; }
+.order li { margin-bottom: 3px; }
+
+/* errors + notes */
+.errors { display: grid; gap: 13px; margin: 18px 0; }
+.errors > div { border-left: 3px solid var(--line); padding: 3px 0 3px 16px; }
+.errors b { display: block; font-family: "JetBrains Mono", monospace; font-size: 12.5px; color: var(--warn); margin-bottom: 3px; }
+.errors span { font-size: 14.7px; color: var(--ink-soft); }
+ul.notes { padding-left: 20px; max-width: 72ch; }
+ul.notes li { margin-bottom: 7px; }
+pre.results { font-size: 12px; }
+
+footer { border-top: 1px solid var(--line); padding: 26px 0 60px; color: var(--ink-faint); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding: 0 20px; }
+  .toc-inner { position: static; padding: 24px 0 0; grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; }
+  .toc a { border-left: 0; border-bottom: 2px solid var(--line); white-space: nowrap; }
+  .toc a.on { border-bottom-color: var(--accent); }
+  .wrap { padding: 0 20px; }
+  .ex-pair { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+</style>
+
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Spring Boot &#183; Spring Cloud Gateway &#183; Feign &#183; MySQL</p>
+    <h1>Shopping Cart Microservices</h1>
+    <p class="sub">Seven services, three roles, one door in. How it is built, how it connects, and how to
+    run it.</p>
+    <dl class="facts">
+      <div><dt>Projects</dt><dd>7</dd></div>
+      <div><dt>Roles</dt><dd>USER &#183; SHOPOWNER &#183; ADMIN</dd></div>
+      <div><dt>Database</dt><dd>MySQL, 5 schemas</dd></div>
+      <div><dt>Verified</dt><dd>19 checks, 0 failures</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc"><div class="toc-inner"><p class="toc-head">Contents</p><a href="#overview">What this is</a><a href="#architecture">How it fits together</a><a href="#lifecycle">One request, end to end</a><a href="#projects">The seven projects</a><a href="#folders">The eight folders</a><a href="#auth">Authentication</a><a href="#feign">Feign, for service to service</a><a href="#validation">Validation, exceptions and the controller</a><a href="#ownership">The ownership rule</a><a href="#aop">AOP logging</a><a href="#api">The endpoints</a><a href="#running">Running it on Windows, in Eclipse</a><a href="#troubleshooting">When something does not work</a><a href="#tests">What has been verified</a></div></nav>
+  <main><section id="overview"><h2>What this is</h2>
+<p class="lede">A shopping cart backend built as seven Spring Boot applications. Three roles, JWT login
+through an API gateway, Feign for service-to-service calls, validation on every request body, and AOP
+logging in each service. There is no frontend: everything is driven from Swagger or Postman.</p>
+
+<p>It is running and tested. An end to end script walks registration, login, listing a product, filling a
+cart, checkout, shipping, and every rejection in between: <strong>19 checks, 0 failures</strong>. Every
+request and response on this page was captured from that running system, not written by hand.</p>
+
+<div class="roles">
+  <div><h4>USER</h4><p>Registers, keeps a profile, browses, fills a cart, places orders, sees their own
+  orders and cancels one that has not shipped.</p></div>
+  <div><h4>SHOPOWNER</h4><p>Everything a user can do, plus listing products they own, and shipping the
+  orders placed for those products.</p></div>
+  <div><h4>ADMIN</h4><p>Sees every user, profile and order. Can delete any product. Cannot place an order.</p></div>
+</div>
+
+<p>Two rules run through the whole system and are worth holding in mind while reading the rest:
+<strong>a shopowner can only touch their own products</strong>, and <strong>a user only ever sees their
+own cart, profile and orders</strong>. Both are enforced from the identity in the token, never from a
+value the caller sends.</p>
+</section><section id="architecture"><h2>How it fits together</h2>
+<figure class="diagram">
+<svg viewBox="0 0 880 470" role="img" aria-label="Every request enters through the API gateway, which validates the JWT and adds identity headers before forwarding to one of five services; cart and order call other services through Feign, and each service owns its own MySQL schema.">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+    <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f8a8a"/>
+    </marker>
+  </defs>
+
+  <!-- client -->
+  <rect x="20" y="30" width="130" height="46" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="85" y="52" text-anchor="middle" font-size="13" fill="currentColor">Postman</text>
+  <text x="85" y="67" text-anchor="middle" font-size="11" fill="currentColor" opacity=".65">or Swagger</text>
+
+  <line x1="150" y1="53" x2="243" y2="53" stroke="currentColor" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="196" y="44" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">Bearer token</text>
+
+  <!-- gateway -->
+  <rect x="245" y="22" width="240" height="62" rx="5" fill="none" stroke="#0f8a8a" stroke-width="2"/>
+  <text x="365" y="45" text-anchor="middle" font-size="13" font-weight="600" fill="#0f8a8a">api-gateway :8080</text>
+  <text x="365" y="63" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">verify signature, check role</text>
+  <text x="365" y="76" text-anchor="middle" font-size="11" fill="currentColor" opacity=".75">add X-User-Id and X-User-Role</text>
+
+  <!-- rejection paths -->
+  <line x1="365" y1="84" x2="365" y2="112" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#a)"/>
+  <text x="375" y="103" font-size="11" fill="currentColor" opacity=".75">401 no or bad token &#183; 403 wrong role</text>
+
+  <!-- fan out -->
+  <line x1="365" y1="124" x2="365" y2="146" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="90" y1="146" x2="790" y2="146" stroke="currentColor" stroke-width="1.5"/>
+
+  <!-- services -->
+  <g font-size="12" fill="currentColor">
+    <line x1="90"  y1="146" x2="90"  y2="182" stroke="currentColor" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="25"  y="184" width="130" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="90"  y="203" text-anchor="middle">auth-service</text>
+    <text x="90"  y="219" text-anchor="middle" font-size="10.5" opacity=".65">8081 &#183; issues the JWT</text>
+
+    <line x1="265" y1="146" x2="265" y2="182" stroke="currentColor" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="200" y="184" width="130" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="265" y="203" text-anchor="middle">profile-service</text>
+    <text x="265" y="219" text-anchor="middle" font-size="10.5" opacity=".65">8082</text>
+
+    <line x1="440" y1="146" x2="440" y2="182" stroke="currentColor" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="375" y="184" width="130" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="440" y="203" text-anchor="middle">product-service</text>
+    <text x="440" y="219" text-anchor="middle" font-size="10.5" opacity=".65">8083 &#183; ownerId</text>
+
+    <line x1="615" y1="146" x2="615" y2="182" stroke="currentColor" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="550" y="184" width="130" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="615" y="203" text-anchor="middle">cart-service</text>
+    <text x="615" y="219" text-anchor="middle" font-size="10.5" opacity=".65">8084</text>
+
+    <line x1="790" y1="146" x2="790" y2="182" stroke="currentColor" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="725" y="184" width="130" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="790" y="203" text-anchor="middle">order-service</text>
+    <text x="790" y="219" text-anchor="middle" font-size="10.5" opacity=".65">8085</text>
+  </g>
+
+  <!-- feign edges -->
+  <path d="M 550 258 L 505 258" fill="none" stroke="#0f8a8a" stroke-width="1.6" marker-end="url(#af)"/>
+  <text x="527" y="250" text-anchor="middle" font-size="10.5" fill="#0f8a8a">Feign</text>
+  <path d="M 725 272 L 690 272" fill="none" stroke="#0f8a8a" stroke-width="1.6" marker-end="url(#af)"/>
+  <path d="M 725 258 C 640 300, 540 300, 505 262" fill="none" stroke="#0f8a8a" stroke-width="1.6" marker-end="url(#af)"/>
+  <text x="612" y="299" text-anchor="middle" font-size="10.5" fill="#0f8a8a">Feign: read the cart, then the product owner</text>
+
+  <!-- databases -->
+  <g font-size="10.5" fill="currentColor" opacity=".8">
+    <line x1="90"  y1="228" x2="90"  y2="352" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <line x1="265" y1="228" x2="265" y2="352" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <line x1="440" y1="228" x2="440" y2="352" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <line x1="615" y1="228" x2="615" y2="352" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <line x1="790" y1="228" x2="790" y2="352" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <rect x="25" y="354" width="830" height="46" rx="5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <text x="90"  y="374" text-anchor="middle">shopcart_auth</text>
+    <text x="265" y="374" text-anchor="middle">shopcart_profile</text>
+    <text x="440" y="374" text-anchor="middle">shopcart_product</text>
+    <text x="615" y="374" text-anchor="middle">shopcart_cart</text>
+    <text x="790" y="374" text-anchor="middle">shopcart_order</text>
+    <text x="440" y="392" text-anchor="middle" opacity=".8">MySQL, one schema per service. No service reads another one's tables.</text>
+  </g>
+
+  <!-- eureka -->
+  <rect x="330" y="420" width="220" height="38" rx="5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <text x="440" y="444" text-anchor="middle" font-size="12" fill="currentColor">discovery-server :8761 (Eureka)</text>
+  <text x="565" y="444" font-size="10.5" fill="currentColor" opacity=".7">every box above registers here by name</text>
+</svg>
+<figcaption>The gateway is the only way in. It is also the only component that reads a JWT: everything behind it
+identifies the caller from the two headers the gateway adds.</figcaption>
+</figure>
+
+<p>Read it in three layers.</p>
+
+<p><strong>One door.</strong> A client only ever talks to <code>:8080</code>. The gateway matches the path
+against a route table, checks the token, checks the role, and forwards. A request that fails either check
+never reaches a service, which is why the services carry no security code of their own.</p>
+
+<p><strong>Identity travels as headers.</strong> The gateway converts the token into
+<code>X-User-Id</code> and <code>X-User-Role</code> and sets them on the forwarded request. Every
+controller behind the gateway reads those, so no service parses a JWT and there is one copy of the
+signing secret to keep safe rather than six.</p>
+
+<p><strong>Two services call other services, both over Feign.</strong> cart-service asks product-service
+for a price. order-service reads the cart at checkout and asks product-service who owns each product, so
+a shopowner can later be shown the orders for their own goods. Nothing else crosses a boundary.</p>
+
+<div class="callout">
+  <h4>The honest limit of this design</h4>
+  <p>The services trust those headers, so they are only as protected as the gateway in front of them.
+  Running locally you can still call <code>:8083</code> directly and claim to be anyone. That is the normal
+  starting point for a project this size, and the fix when it matters is to stop exposing service ports and
+  let only the gateway reach them.</p>
+</div>
+</section><section id="lifecycle"><h2>One request, end to end</h2>
+<p>Adding an item to a cart touches the gateway, two services and a database. Following it once explains
+most of the system.</p>
+
+<figure class="diagram">
+<svg viewBox="0 0 880 330" role="img" aria-label="Adding an item to the cart: the client sends a product id and quantity with a bearer token, the gateway validates and adds identity headers, cart-service asks product-service for the real price over Feign, writes the row, and returns the priced cart.">
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <g font-size="12" fill="currentColor">
+    <text x="70"  y="26" text-anchor="middle" font-weight="600">Client</text>
+    <text x="285" y="26" text-anchor="middle" font-weight="600">api-gateway</text>
+    <text x="530" y="26" text-anchor="middle" font-weight="600">cart-service</text>
+    <text x="790" y="26" text-anchor="middle" font-weight="600">product-service</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity=".35">
+    <line x1="70"  y1="36" x2="70"  y2="300"/>
+    <line x1="285" y1="36" x2="285" y2="300"/>
+    <line x1="530" y1="36" x2="530" y2="300"/>
+    <line x1="790" y1="36" x2="790" y2="300"/>
+  </g>
+
+  <g font-size="11" fill="currentColor">
+    <line x1="70" y1="66" x2="278" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#b)"/>
+    <text x="174" y="59" text-anchor="middle">1. POST /cart/items {productId, quantity}</text>
+    <text x="174" y="80" text-anchor="middle" opacity=".7">Authorization: Bearer eyJ...</text>
+
+    <line x1="285" y1="118" x2="523" y2="118" stroke="currentColor" stroke-width="1.5" marker-end="url(#b)"/>
+    <text x="404" y="111" text-anchor="middle">2. forwarded, token stripped of nothing</text>
+    <text x="404" y="132" text-anchor="middle" fill="#0f8a8a">X-User-Id: 12 &#183; X-User-Role: USER</text>
+
+    <line x1="530" y1="170" x2="783" y2="170" stroke="#0f8a8a" stroke-width="1.5" marker-end="url(#b)"/>
+    <text x="656" y="163" text-anchor="middle" fill="#0f8a8a">3. Feign: GET /products/7</text>
+
+    <line x1="790" y1="206" x2="537" y2="206" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#b)"/>
+    <text x="663" y="199" text-anchor="middle">4. price 12999, name, ownerId</text>
+
+    <line x1="530" y1="248" x2="70" y2="248" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#b)"/>
+    <text x="300" y="241" text-anchor="middle">6. 200 with the priced cart and its total</text>
+  </g>
+
+  <rect x="470" y="258" width="255" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="597" y="274" text-anchor="middle" font-size="11" fill="currentColor">5. row written to shopcart_cart</text>
+  <text x="597" y="289" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".7">with the price product-service reported</text>
+</svg>
+<figcaption>Step 3 is the one that matters. The client sent no price, and any price it did send is discarded:
+the number stored is the one product-service reports.</figcaption>
+</figure>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">Adding a Kindle to the cart</span><span class="ex-code good">200</span></div>
+  <p class="ex-note">Look closely at the request: it sends <code>price: 1</code>. The response prices it at 12999, because cart-service overwrites whatever the client sends with the price product-service reports. This is the single most common flaw in a cart project, and the reason the Feign call exists at all.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /cart/items
+{&quot;productId&quot;:5,&quot;quantity&quot;:1,&quot;price&quot;:1}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;userId&quot;: 12,
+  &quot;items&quot;: [
+    {
+      &quot;productId&quot;: 5,
+      &quot;productName&quot;: &quot;Kindle Paperwhite 2076&quot;,
+      &quot;price&quot;: 12999.0,
+      &quot;quantity&quot;: 1,
+      &quot;lineTotal&quot;: 12999.0
+    }
+  ],
+  &quot;totalPrice&quot;: 12999.0
+}</code></pre></div>
+  </div>
+</div>
+</section><section id="projects"><h2>The seven projects</h2>
+<table class="grid">
+<thead><tr><th>Project</th><th>Port</th><th>What it owns</th><th>Calls</th></tr></thead>
+<tbody>
+<tr><td><code>discovery-server</code></td><td>8761</td><td>Eureka registry</td><td>nobody</td></tr>
+<tr><td><code>api-gateway</code></td><td>8080</td><td>Routing, JWT check, role check</td><td>all, by name</td></tr>
+<tr><td><code>auth-service</code></td><td>8081</td><td>Logins, password hashes, roles, the JWT</td><td>nobody</td></tr>
+<tr><td><code>profile-service</code></td><td>8082</td><td>User profiles</td><td>nobody</td></tr>
+<tr><td><code>product-service</code></td><td>8083</td><td>The catalog, with an owner per product</td><td>nobody</td></tr>
+<tr><td><code>cart-service</code></td><td>8084</td><td>One cart per user</td><td>product</td></tr>
+<tr><td><code>order-service</code></td><td>8085</td><td>Orders, addresses, order status</td><td>cart, product</td></tr>
+</tbody></table>
+
+<p>The user record is split so nothing is duplicated. <code>auth-service</code> holds the userId, email,
+password hash and role. <code>profile-service</code> holds the same userId with no password, plus name,
+phone, gender and date of birth. The userId comes from the token, so neither service ever has to ask the
+other for anything.</p>
+</section><section id="folders"><h2>The eight folders</h2>
+<p>Every service has the same eight folders under <code>com.shoppingcart.&lt;service&gt;</code>, so anyone
+who has read one service can navigate all of them.</p>
+
+<figure class="code"><figcaption>src/main/java/com/shoppingcart/product/</figcaption><pre><code class="language-text">aop/             the logging aspect
+config/          Swagger, Feign, and in auth-service the security classes
+controller/      endpoints only, no logic
+dto/             what the API accepts and returns
+exception/       ApiException, ErrorResponse, GlobalExceptionHandler
+model/           the JPA entities
+repository/      Spring Data interfaces
+service/         the rules, plus the Feign client interfaces</code></pre></figure>
+
+<ul class="notes">
+  <li><strong>controller</strong> reads the headers, calls one service method, wraps the result in a
+  <code>ResponseEntity</code>. An <code>if</code> doing business logic belongs one layer down.</li>
+  <li><strong>service</strong> holds every rule and is the only layer that throws a business exception.</li>
+  <li><strong>dto</strong> is separate from <strong>model</strong> on purpose. It is how a password is
+  accepted at registration and never appears in a response.</li>
+  <li><strong>exception</strong> holds one <code>@RestControllerAdvice</code>, so a failure is clean JSON
+  with the right status rather than a stack trace.</li>
+</ul>
+
+<p>There is no ninth folder, and that decided two placements: auth-service's <code>SecurityConfig</code>
+and <code>JwtUtil</code> live in <strong>config/</strong>, and the Feign client interfaces live in
+<strong>service/</strong> beside the classes that use them.</p>
+</section><section id="auth"><h2>Authentication</h2>
+<p>Registration hashes the password with BCrypt. Nothing anywhere stores or returns it in plain text, and
+the response DTO has no password field at all.</p>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">Register a customer</span><span class="ex-code good">201</span></div>
+  
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /auth/register
+{&quot;email&quot;:&quot;asha2076@example.com&quot;,&quot;password&quot;:&quot;secret123&quot;,&quot;role&quot;:&quot;USER&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;userId&quot;: 12,
+  &quot;email&quot;: &quot;asha2076@example.com&quot;,
+  &quot;role&quot;: &quot;USER&quot;,
+  &quot;active&quot;: true
+}</code></pre></div>
+  </div>
+</div>
+
+<p>Validation runs before any of that. The annotations sit on the DTO, and <code>@Valid</code> on the
+controller parameter is what makes them run.</p>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">A bad email and a two-character password</span><span class="ex-code warn">400</span></div>
+  <p class="ex-note">Every bad field is reported at once, not just the first one.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /auth/register
+{&quot;email&quot;:&quot;nope&quot;,&quot;password&quot;:&quot;12&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;status&quot;: 400,
+  &quot;message&quot;: &quot;validation failed&quot;,
+  &quot;errors&quot;: {
+    &quot;email&quot;: &quot;must be a valid email address&quot;,
+    &quot;password&quot;: &quot;password must be at least 6 characters&quot;,
+    &quot;role&quot;: &quot;role is required, one of USER, SHOPOWNER, ADMIN&quot;
+  },
+  &quot;timestamp&quot;: &quot;2026-09-08T20:22:16.406431&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">Log in</span><span class="ex-code good">200</span></div>
+  <p class="ex-note">The token carries the user id as its subject, plus the email and the role. It expires in 24 hours.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /auth/login
+{&quot;email&quot;:&quot;asha2076@example.com&quot;,&quot;password&quot;:&quot;secret123&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;token&quot;: &quot;eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxMiIsImVtYWlsIjoiYXNoYTIwNzZAZXhhbXBsZS5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4ODg3OTEzNiwiZXhwIjoxNzg4OTY1NTM2fQ.OV1HjoAAmHXehikcLSAi1Ms1kjUWQmAUXDhZH0HbsCetj6-FPQih9Wi2wvPdwqKZ&quot;,
+  &quot;userId&quot;: 12,
+  &quot;email&quot;: &quot;asha2076@example.com&quot;,
+  &quot;role&quot;: &quot;USER&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">The wrong password</span><span class="ex-code warn">401</span></div>
+  <p class="ex-note">Deliberately the same message a wrong email gets. Saying which half was wrong tells an attacker which emails are registered.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /auth/login
+{&quot;email&quot;:&quot;asha2076@example.com&quot;,&quot;password&quot;:&quot;wrong&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;status&quot;: 401,
+  &quot;message&quot;: &quot;invalid email or password&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-08T20:22:17.372369&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<h3>What the gateway does with that token</h3>
+
+<figure class="code"><figcaption>api-gateway/…/config/JwtAuthenticationFilter.java (the core of it)</figcaption><pre><code class="language-java">        String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (header == null || !header.startsWith(&quot;Bearer &quot;)) {
+            return deny(exchange, HttpStatus.UNAUTHORIZED, &quot;missing or malformed Authorization header&quot;);
+        }
+
+        Claims claims;
+        try {
+            claims = jwtValidator.parse(header.substring(7));
+        } catch (JwtException | IllegalArgumentException e) {
+            return deny(exchange, HttpStatus.UNAUTHORIZED, &quot;invalid or expired token&quot;);
+        }
+
+        String userId = claims.getSubject();
+        String role = String.valueOf(claims.get(&quot;role&quot;));
+
+        if (!routeRules.isAllowed(method, path, role)) {
+            return deny(exchange, HttpStatus.FORBIDDEN, &quot;role &quot; + role + &quot; cannot access this endpoint&quot;);
+        }
+
+        // The services read these two and never parse a token themselves. Set, not add, so a
+        // caller cannot smuggle their own X-User-Id in and be believed.
+        ServerHttpRequest mutated = request.mutate()
+                .header(&quot;X-User-Id&quot;, userId)
+                .header(&quot;X-User-Role&quot;, role)
+                .build();
+
+        return chain.filter(exchange.mutate().request(mutated).build());</code></pre></figure>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">No token on an admin route</span><span class="ex-code warn">401</span></div>
+  
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">GET /auth/users</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;status&quot;: 401,
+  &quot;message&quot;: &quot;missing or malformed Authorization header&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-08T20:22:17.609878&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">A USER token on an admin route</span><span class="ex-code warn">403</span></div>
+  <p class="ex-note">The token is perfectly valid. It is the role that is wrong, which is a 403 and not a 401.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">GET /auth/users</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;status&quot;: 403,
+  &quot;message&quot;: &quot;role USER cannot access this endpoint&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-08T20:22:17.849148&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<div class="callout">
+  <h4>Not built, on purpose</h4>
+  <p>Refresh tokens, password reset, email verification, logout and token blacklisting. Each is a real
+  feature and each can be added without changing anything above.</p>
+</div>
+</section><section id="feign"><h2>Feign, for service to service</h2>
+<p>Feign turns an HTTP call into an interface. You declare the call and Spring writes the client; the
+service <em>name</em> is resolved through Eureka, so no port appears anywhere in the code.</p>
+
+<figure class="code"><figcaption>cart-service/…/service/ProductClient.java</figcaption><pre><code class="language-java">package com.shoppingcart.cart.service;
+
+import com.shoppingcart.cart.dto.ProductDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+/**
+ * How this service talks to product-service. Feign writes the HTTP call; the name is resolved
+ * through Eureka, so no port appears anywhere.
+ */
+@FeignClient(name = &quot;product-service&quot;)
+public interface ProductClient {
+
+    @GetMapping(&quot;/products/{productId}&quot;)
+    ProductDto getProductById(@PathVariable(&quot;productId&quot;) Long productId);
+}</code></pre></figure>
+
+<p>Calling it reads like a method call:</p>
+
+<figure class="code"><figcaption>cart-service/…/service/CartServiceImpl.java (extract)</figcaption><pre><code class="language-java">ProductDto product = productClient.getProductById(dto.getProductId());
+item.setProductName(product.getProductName());
+item.setPrice(product.getPrice());   // never dto.getPrice()</code></pre></figure>
+
+<p>Two things make it work: <code>spring-cloud-starter-openfeign</code> in the pom, and
+<code>@EnableFeignClients</code> on the main class. Only cart-service and order-service need either.</p>
+
+<p>order-service uses it twice at checkout, and the second one is easy to miss the point of. It reads the
+cart from cart-service rather than accepting a cart posted by the client, and asks product-service who
+owns each product, so that <code>GET /orders/received</code> can later show a shopowner exactly the orders
+for their own goods.</p>
+</section><section id="validation"><h2>Validation, exceptions and the controller</h2>
+<p>These three are one flow. The controller only receives, validation rejects bad input before any rule
+runs, and the advice turns whatever is thrown into one JSON shape.</p>
+
+<figure class="code"><figcaption>product-service/…/dto/ProductDto.java</figcaption><pre><code class="language-java">public class ProductDto {
+
+    private Long productId;
+
+    @NotBlank(message = &quot;product name is required&quot;)
+    private String productName;
+
+    @NotBlank(message = &quot;category is required&quot;)
+    private String category;
+
+    @Positive(message = &quot;price must be greater than 0&quot;)
+    private double price;
+
+    @Size(max = 2000, message = &quot;description must be at most 2000 characters&quot;)
+    private String description;
+
+    /** Set from the token on create, never accepted from the caller. */
+    private Long ownerId;
+}</code></pre></figure>
+
+<p>The annotations do nothing on their own. <code>@Valid</code> on the parameter is what triggers them:</p>
+
+<figure class="code"><figcaption>product-service/…/controller/ProductController.java (extract)</figcaption><pre><code class="language-java">@PostMapping
+public ResponseEntity&lt;ProductDto&gt; add(@RequestHeader(&quot;X-User-Id&quot;) Long ownerId,
+                                      @Valid @RequestBody ProductDto dto) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.add(dto, ownerId));
+}</code></pre></figure>
+
+<p>Every service has the same advice, catching three things: a validation failure becomes a 400 listing
+each bad field, an <code>ApiException</code> becomes whatever status it carries, and anything unplanned
+becomes a 500 with a generic message so a stack trace never reaches a caller.</p>
+
+<figure class="code"><figcaption>product-service/…/exception/GlobalExceptionHandler.java</figcaption><pre><code class="language-java">    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleValidation(MethodArgumentNotValidException ex) {
+        Map&lt;String, String&gt; errors = new LinkedHashMap&lt;&gt;();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.putIfAbsent(error.getField(), error.getDefaultMessage());
+        }</code></pre></figure>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">A USER trying to list a product</span><span class="ex-code warn">403</span></div>
+  <p class="ex-note">Rejected at the gateway on the role, before product-service is involved at all.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /products
+{&quot;productName&quot;:&quot;Nope&quot;,&quot;category&quot;:&quot;x&quot;,&quot;price&quot;:1}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;status&quot;: 403,
+  &quot;message&quot;: &quot;role USER cannot access this endpoint&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-08T20:22:18.603924&quot;
+}</code></pre></div>
+  </div>
+</div>
+</section><section id="ownership"><h2>The ownership rule</h2>
+<p>Every product stores the <code>ownerId</code> taken from the token when it was created. Edit and delete
+compare that against the caller. Without this check, any shopowner with a valid token could rewrite or
+delete the entire catalog, which is the kind of thing that is very cheap to add now and very awkward to
+retrofit.</p>
+
+<figure class="code"><figcaption>product-service/…/service/ProductServiceImpl.java</figcaption><pre><code class="language-java">    private void requireOwner(Product product, Long callerId) {
+        if (!product.getOwnerId().equals(callerId)) {
+            throw new ApiException(org.springframework.http.HttpStatus.FORBIDDEN,
+                    &quot;this product belongs to another shopowner&quot;);
+        }</code></pre></figure>
+
+<p>Proven in the test run: shopowner 2 editing shopowner 1's product gives 403, deleting it gives 403, and
+shopowner 1 editing their own gives 200. An ADMIN skips the check on delete, which is the one intentional
+exception.</p>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">A shopowner lists a product</span><span class="ex-code good">201</span></div>
+  <p class="ex-note">The ownerId in the response was set from the token, not from the request body. Anything sent in that field is ignored.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /products
+{&quot;productName&quot;:&quot;Kindle Paperwhite 2076&quot;,&quot;category&quot;:&quot;electronics&quot;,&quot;price&quot;:12999,&quot;description&quot;:&quot;6.8 inch e-reader&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;productId&quot;: 5,
+  &quot;productName&quot;: &quot;Kindle Paperwhite 2076&quot;,
+  &quot;category&quot;: &quot;electronics&quot;,
+  &quot;price&quot;: 12999.0,
+  &quot;description&quot;: &quot;6.8 inch e-reader&quot;,
+  &quot;ownerId&quot;: 13
+}</code></pre></div>
+  </div>
+</div>
+</section><section id="aop"><h2>AOP logging</h2>
+<p>One aspect class per service, in <code>aop/</code>, and not a single log statement in the business
+code.</p>
+
+<figure class="code"><figcaption>product-service/…/aop/LoggingAspect.java</figcaption><pre><code class="language-java">    @Around(&quot;execution(* com.shoppingcart.product.controller..*(..)) &quot;
+            + &quot;|| execution(* com.shoppingcart.product.service..*(..))&quot;)
+    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        String method = joinPoint.getSignature().getDeclaringType().getSimpleName()
+                + &quot;.&quot; + joinPoint.getSignature().getName();
+        long start = System.currentTimeMillis();
+        log.info(&quot;{} called with {}&quot;, method, java.util.Arrays.toString(joinPoint.getArgs()));</code></pre></figure>
+
+<p>Real output from the running system, one add-to-cart:</p>
+
+<figure class="code"><figcaption>logs/cart-service.log</figcaption><pre><code class="language-text">CartController.addItem called with [12, CartItemDto(productId=7, productName=null, price=1.0, quantity=1, lineTotal=0.0)]
+CartServiceImpl.addItem called with [12, CartItemDto(productId=7, productName=null, price=1.0, quantity=1, lineTotal=0.0)]
+CartServiceImpl.getCart called with [12]
+CartServiceImpl.getCart returned in 3ms
+CartServiceImpl.addItem returned in 41ms
+CartController.addItem returned in 43ms</code></pre></figure>
+
+<div class="callout warn">
+  <h4>auth-service is different, and has to be</h4>
+  <p>Its aspect excludes <code>register</code> and <code>login</code>. Their arguments are the email and
+  the plain-text password, and a log file is not the place for those. The pointcut names the exclusions
+  explicitly rather than relying on anyone remembering.</p>
+</div>
+</section><section id="api"><h2>The endpoints</h2>
+<p>Every path below goes through the gateway on <code>:8080</code>. The role column is the gateway's route
+table, in the order it is checked.</p>
+
+<h3>auth-service</h3>
+<table class="grid api">
+<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Does</th></tr></thead>
+<tbody>
+<tr><td>POST</td><td><code>/auth/register</code></td><td class="pub">public</td><td>Create a login with a role</td></tr>
+<tr><td>POST</td><td><code>/auth/login</code></td><td class="pub">public</td><td>Return a JWT</td></tr>
+<tr><td>GET</td><td><code>/auth/users</code></td><td>ADMIN</td><td>Every login</td></tr>
+<tr><td>PUT</td><td><code>/auth/users/{id}/deactivate</code></td><td>ADMIN</td><td>Block a user from logging in</td></tr>
+</tbody></table>
+
+<h3>profile-service</h3>
+<table class="grid api">
+<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Does</th></tr></thead>
+<tbody>
+<tr><td>POST</td><td><code>/profiles/me</code></td><td>any signed in</td><td>Create the caller's profile</td></tr>
+<tr><td>GET</td><td><code>/profiles/me</code></td><td>any signed in</td><td>Read it</td></tr>
+<tr><td>PUT</td><td><code>/profiles/me</code></td><td>any signed in</td><td>Update it</td></tr>
+<tr><td>GET</td><td><code>/profiles</code></td><td>ADMIN</td><td>Every profile</td></tr>
+</tbody></table>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">Creating a profile</span><span class="ex-code good">201</span></div>
+  <p class="ex-note">There is no userId in the path or the body. It comes from the token, which is what stops one user writing to another user's profile.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /profiles/me
+{&quot;fullName&quot;:&quot;Asha Rao&quot;,&quot;phone&quot;:&quot;9812345670&quot;,&quot;gender&quot;:&quot;F&quot;,&quot;dateOfBirth&quot;:&quot;1996-02-20&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;userId&quot;: 12,
+  &quot;fullName&quot;: &quot;Asha Rao&quot;,
+  &quot;phone&quot;: &quot;9812345670&quot;,
+  &quot;gender&quot;: &quot;F&quot;,
+  &quot;dateOfBirth&quot;: &quot;1996-02-20&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<h3>product-service</h3>
+<table class="grid api">
+<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Does</th></tr></thead>
+<tbody>
+<tr><td>GET</td><td><code>/products</code></td><td class="pub">public</td><td>Browse everything</td></tr>
+<tr><td>GET</td><td><code>/products/{id}</code></td><td class="pub">public</td><td>One product</td></tr>
+<tr><td>GET</td><td><code>/products/category/{category}</code></td><td class="pub">public</td><td>Browse a category</td></tr>
+<tr><td>GET</td><td><code>/products/my</code></td><td>SHOPOWNER</td><td>The caller's own catalog</td></tr>
+<tr><td>POST</td><td><code>/products</code></td><td>SHOPOWNER</td><td>List a product</td></tr>
+<tr><td>PUT</td><td><code>/products/{id}</code></td><td>SHOPOWNER</td><td>Edit, own only</td></tr>
+<tr><td>DELETE</td><td><code>/products/{id}</code></td><td>SHOPOWNER, ADMIN</td><td>Owner deletes own, admin deletes any</td></tr>
+</tbody></table>
+
+<h3>cart-service</h3>
+<p>The cart is identified by the caller, so no cart id appears in any path.</p>
+<table class="grid api">
+<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Does</th></tr></thead>
+<tbody>
+<tr><td>GET</td><td><code>/cart</code></td><td>USER</td><td>The cart with a live total</td></tr>
+<tr><td>POST</td><td><code>/cart/items</code></td><td>USER</td><td>Add an item, priced from product-service</td></tr>
+<tr><td>PUT</td><td><code>/cart/items/{productId}?quantity=</code></td><td>USER</td><td>Change the quantity</td></tr>
+<tr><td>DELETE</td><td><code>/cart/items/{productId}</code></td><td>USER</td><td>Remove one item</td></tr>
+<tr><td>DELETE</td><td><code>/cart</code></td><td>USER</td><td>Empty it</td></tr>
+</tbody></table>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">The cart, priced</span><span class="ex-code good">200</span></div>
+  
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">GET /cart</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;userId&quot;: 12,
+  &quot;items&quot;: [
+    {
+      &quot;productId&quot;: 5,
+      &quot;productName&quot;: &quot;Kindle Paperwhite 2076&quot;,
+      &quot;price&quot;: 12999.0,
+      &quot;quantity&quot;: 1,
+      &quot;lineTotal&quot;: 12999.0
+    }
+  ],
+  &quot;totalPrice&quot;: 12999.0
+}</code></pre></div>
+  </div>
+</div>
+
+<h3>order-service</h3>
+<table class="grid api">
+<thead><tr><th>Method</th><th>Path</th><th>Role</th><th>Does</th></tr></thead>
+<tbody>
+<tr><td>POST</td><td><code>/orders/address</code></td><td>USER</td><td>Save a delivery address</td></tr>
+<tr><td>GET</td><td><code>/orders/address</code></td><td>USER</td><td>List own addresses</td></tr>
+<tr><td>POST</td><td><code>/orders/checkout</code></td><td>USER</td><td>Turn the cart into orders</td></tr>
+<tr><td>GET</td><td><code>/orders/my</code></td><td>USER</td><td>Own orders</td></tr>
+<tr><td>PUT</td><td><code>/orders/{id}/cancel</code></td><td>USER</td><td>Cancel while still PLACED</td></tr>
+<tr><td>GET</td><td><code>/orders/received</code></td><td>SHOPOWNER</td><td>Orders for the caller's products</td></tr>
+<tr><td>PUT</td><td><code>/orders/{id}/status?status=</code></td><td>SHOPOWNER</td><td>SHIPPED or DELIVERED</td></tr>
+<tr><td>GET</td><td><code>/orders</code></td><td>ADMIN</td><td>Every order</td></tr>
+</tbody></table>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">Saving an address</span><span class="ex-code good">201</span></div>
+  
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /orders/address
+{&quot;fullName&quot;:&quot;Asha Rao&quot;,&quot;mobileNumber&quot;:&quot;9812345670&quot;,&quot;flatNumber&quot;:&quot;12&quot;,&quot;city&quot;:&quot;Bengaluru&quot;,&quot;state&quot;:&quot;Karnataka&quot;,&quot;pincode&quot;:&quot;560038&quot;}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;addressId&quot;: 3,
+  &quot;userId&quot;: 12,
+  &quot;fullName&quot;: &quot;Asha Rao&quot;,
+  &quot;mobileNumber&quot;: &quot;9812345670&quot;,
+  &quot;flatNumber&quot;: &quot;12&quot;,
+  &quot;city&quot;: &quot;Bengaluru&quot;,
+  &quot;state&quot;: &quot;Karnataka&quot;,
+  &quot;pincode&quot;: &quot;560038&quot;
+}</code></pre></div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">Checkout</span><span class="ex-code good">201</span></div>
+  <p class="ex-note">The client sends only an address id. Everything else, the items and their prices, is read from cart-service. One order row is written per cart line, and the address is copied onto the order rather than linked, so an old order still shows where it actually went after the customer edits their address.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">POST /orders/checkout
+{&quot;addressId&quot;:3}</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">[
+  {
+    &quot;orderId&quot;: 3,
+    &quot;userId&quot;: 12,
+    &quot;productId&quot;: 5,
+    &quot;productName&quot;: &quot;Kindle Paperwhite 2076&quot;,
+    &quot;ownerId&quot;: 13,
+    &quot;quantity&quot;: 1,
+    &quot;amountPaid&quot;: 12999.0,
+    &quot;modeOfPayment&quot;: &quot;Cash on delivery&quot;,
+    &quot;orderStatus&quot;: &quot;PLACED&quot;,
+    &quot;orderDate&quot;: &quot;2026-09-08T20:22:19.635399&quot;,
+    &quot;address&quot;: {
+      &quot;addressId&quot;: 3,
+      &quot;userId&quot;: 12,
+      &quot;fullName&quot;: &quot;Asha Rao&quot;,
+      &quot;mobileNumber&quot;: &quot;9812345670&quot;,
+      &quot;flatNumber&quot;: &quot;12&quot;,
+      &quot;city&quot;: &quot;Bengaluru&quot;,
+      &quot;state&quot;: &quot;Karnataka&quot;,
+      &quot;pincode&quot;: &quot;560038&quot;
+    }
+  }
+]</code></pre></div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">The cart, immediately after checkout</span><span class="ex-code good">200</span></div>
+  <p class="ex-note">Emptied. It is cleared last, so if anything above fails the customer still has their cart.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">GET /cart</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">{
+  &quot;userId&quot;: 12,
+  &quot;items&quot;: [],
+  &quot;totalPrice&quot;: 0.0
+}</code></pre></div>
+  </div>
+</div>
+
+<div class="example">
+  <div class="ex-head"><span class="ex-title">What the shopowner sees</span><span class="ex-code good">200</span></div>
+  <p class="ex-note">These are the orders for products this shopowner owns, matched on the ownerId that order-service copied at checkout.</p>
+  <div class="ex-pair">
+    <div><span class="ex-label">Request</span><pre><code class="language-http">GET /orders/received</code></pre></div>
+    <div><span class="ex-label">Response</span><pre><code class="language-json">[
+  {
+    &quot;orderId&quot;: 3,
+    &quot;userId&quot;: 12,
+    &quot;productId&quot;: 5,
+    &quot;productName&quot;: &quot;Kindle Paperwhite 2076&quot;,
+    &quot;ownerId&quot;: 13,
+    &quot;quantity&quot;: 1,
+    &quot;amountPaid&quot;: 12999.0,
+    &quot;modeOfPayment&quot;: &quot;Cash on delivery&quot;,
+    &quot;orderStatus&quot;: &quot;PLACED&quot;,
+    &quot;orderDate&quot;: &quot;2026-09-08T20:22:19.635399&quot;,
+    &quot;address&quot;: {
+      &quot;addressId&quot;: 3,
+      &quot;userId&quot;: 12,
+      &quot;fullName&quot;: &quot;Asha Rao&quot;,
+      &quot;mobileNumber&quot;: &quot;9812345670&quot;,
+      &quot;flatNumber&quot;: &quot;12&quot;,
+      &quot;city&quot;: &quot;Bengaluru&quot;,
+      &quot;state&quot;: &quot;Karnataka&quot;,
+      &quot;pincode&quot;: &quot;560038&quot;
+    }
+  }
+]</code></pre></div>
+  </div>
+</div>
+</section><section id="running"><h2>Running it on Windows, in Eclipse</h2>
+<p>Seven projects, started in one particular order. Do these once and the rest is a button.</p>
+
+<div class="steps">
+
+<div class="step"><span class="n">1</span><div>
+<h4>Install the tools</h4>
+<p><strong>JDK 17 or newer</strong>, <strong>Eclipse with Spring Tools 4</strong> (Help &rsaquo; Eclipse
+Marketplace, search Spring Tools), and <strong>MySQL 8</strong> (the Community installer, choosing
+<em>Server only</em> is enough). Note the root password you set during the MySQL install: you will need it
+in step 3.</p>
+</div></div>
+
+<div class="step"><span class="n">2</span><div>
+<h4>Install Lombok into Eclipse</h4>
+<p>This one catches everyone. Lombok generates the getters and setters at compile time, and Eclipse needs a
+small agent before its editor can see them. Without it the code builds fine with Maven while the editor
+shows hundreds of red errors like <code>getPrice() is undefined</code>.</p>
+<p>Find <code>lombok.jar</code> under <code>C:\Users\&lt;you&gt;\.m2\repository\org\projectlombok\lombok\</code>,
+then in a command prompt:</p>
+<pre><code class="language-bash">java -jar lombok.jar</code></pre>
+<p>Click <strong>Install / Update</strong>, point it at your Eclipse folder, then restart Eclipse.</p>
+</div></div>
+
+<div class="step"><span class="n">3</span><div>
+<h4>Create the five schemas</h4>
+<p>Open MySQL Workbench, or the MySQL Command Line Client, and run:</p>
+<pre><code class="language-sql">CREATE DATABASE shopcart_auth;
+CREATE DATABASE shopcart_profile;
+CREATE DATABASE shopcart_product;
+CREATE DATABASE shopcart_cart;
+CREATE DATABASE shopcart_order;</code></pre>
+<p>One schema per service, which is what keeps them independent: product-service physically cannot join
+onto the orders table.</p>
+<p>Each service reads its password from an environment variable. Set it once for the machine, then restart
+Eclipse so it picks it up:</p>
+<pre><code class="language-bash">setx DB_PASSWORD "your-mysql-root-password"</code></pre>
+<p>If you would rather not, put the password directly in each <code>application.yml</code> instead, but
+then do not commit those files anywhere public.</p>
+</div></div>
+
+<div class="step"><span class="n">4</span><div>
+<h4>Import the projects</h4>
+<p><strong>File &rsaquo; Import &rsaquo; Maven &rsaquo; Existing Maven Projects</strong>, point it at the
+<code>shopping-cart</code> folder, and tick all seven. Eclipse downloads the dependencies on first import,
+which takes a few minutes.</p>
+<p>If a project shows errors afterwards, right-click it and choose <strong>Maven &rsaquo; Update
+Project</strong>.</p>
+</div></div>
+
+<div class="step"><span class="n">5</span><div>
+<h4>Start them, discovery-server first</h4>
+<p>Right-click a project and choose <strong>Run As &rsaquo; Spring Boot App</strong>. Order matters only for
+the first one:</p>
+<ol class="order">
+  <li><code>discovery-server</code>, then wait until <a href="http://localhost:8761">localhost:8761</a> loads</li>
+  <li><code>auth-service</code>, <code>profile-service</code>, <code>product-service</code>,
+      <code>cart-service</code>, <code>order-service</code>, in any order</li>
+  <li><code>api-gateway</code> last</li>
+</ol>
+<p>Open the <strong>Boot Dashboard</strong> (Window &rsaquo; Show View &rsaquo; Other &rsaquo; Boot Dashboard)
+and you can select all seven and start or stop them together from then on.</p>
+<p>Give it about 30 seconds, then check <a href="http://localhost:8761">localhost:8761</a>. All six
+applications should be listed. Cross-service calls do not work until they are.</p>
+</div></div>
+
+<div class="step"><span class="n">6</span><div>
+<h4>Use it</h4>
+<p>Everything goes through <strong>http://localhost:8080</strong>. Start here:</p>
+<pre><code class="language-bash">POST http://localhost:8080/auth/register
+{"email":"you@example.com","password":"secret123","role":"SHOPOWNER"}
+
+POST http://localhost:8080/auth/login
+{"email":"you@example.com","password":"secret123"}</code></pre>
+<p>Copy the <code>token</code> from the login response. In Postman put it under
+<strong>Authorization &rsaquo; Bearer Token</strong>, and every later call carries it automatically.</p>
+<p>Each service also has its own Swagger page, useful for seeing one service in isolation:
+<code>http://localhost:8083/swagger-ui.html</code> for products. Note that Swagger talks to the service
+directly and so bypasses the gateway, which means no role checks and no <code>X-User-Id</code> header.
+For anything involving a logged-in user, use Postman against :8080.</p>
+</div></div>
+
+</div>
+</section><section id="troubleshooting"><h2>When something does not work</h2>
+<div class="errors">
+  <div><b>Port 8081 was already in use</b><span>Another program has the port, or a previous run never
+  stopped. Stop it in the Boot Dashboard, or change <code>server.port</code> in that service's
+  <code>application.yml</code>. Nothing else needs editing, because the gateway finds services by name
+  through Eureka rather than by port.</span></div>
+
+  <div><b>getPrice() is undefined, and hundreds of similar errors</b><span>Lombok is not installed into
+  Eclipse. Step 2 above, and restart Eclipse afterwards.</span></div>
+
+  <div><b>Access denied for user 'root'@'localhost'</b><span>The <code>DB_PASSWORD</code> environment
+  variable is not set, or Eclipse was not restarted after setting it. Check with <code>echo
+  %DB_PASSWORD%</code> in a fresh command prompt.</span></div>
+
+  <div><b>Unknown database 'shopcart_cart'</b><span>Step 3 was skipped or only partly run. Re-run the five
+  CREATE DATABASE statements.</span></div>
+
+  <div><b>503 Service Unavailable from the gateway</b><span>The target service is not running, or has not
+  registered yet. Check <a href="http://localhost:8761">localhost:8761</a>: registration takes about 30
+  seconds after a service starts.</span></div>
+
+  <div><b>401 on every call, including ones that should work</b><span>The token is missing, expired
+  (24 hours), or was pasted with a line break in it. Log in again and copy the whole
+  <code>token</code> value.</span></div>
+
+  <div><b>403 when you expected it to work</b><span>The role is wrong for that endpoint. Check the role
+  column in the endpoint tables above. A USER cannot list products, and a SHOPOWNER cannot read
+  <code>/orders</code>.</span></div>
+
+  <div><b>400 with "required request header X-User-Id is not present"</b><span>You called a service port
+  directly instead of going through the gateway. Use :8080.</span></div>
+</div>
+</section><section id="tests"><h2>What has been verified</h2>
+<p><code>smoketest.sh</code> drives the whole system through the gateway, exactly as a client would.
+The last run:</p>
+
+<pre class="results"><code>--- 3. gateway: token and role enforcement
+  ok   no token on an admin route                           401
+  ok   garbage token                                        401
+  ok   USER token on an admin route                         403
+  ok   ADMIN token on an admin route                        200
+  ok   browsing the catalog with no token                   200
+--- 4. the user fills in a profile
+  ok   a 4-digit phone is rejected                          400
+--- 5. the shopowner lists two products
+  ok   a USER cannot add a product                          403
+  ok   a price of 0 fails validation                        400
+--- 6. one shopowner cannot touch another one's product
+  ok   shopowner 2 editing shopowner 1 product              403
+  ok   shopowner 1 editing their own product                200
+  ok   shopowner 2 deleting shopowner 1 product             403
+--- 7. the user fills a cart, sending NO price
+  ok   quantity 0 is rejected                               400
+  ok   an unknown product cannot enter the cart             400
+--- 10. the cart is empty afterwards
+  ok   checking out an empty cart                           400
+--- 11. the shopowner sees the order and ships it
+  ok   the other shopowner moving that order                403
+--- 12. a shipped order can no longer be cancelled
+  ok   cancelling a SHIPPED order                           400
+--- 13. admin sees everything, the user only their own
+  ok   admin GET /orders                                    200
+  ok   user GET /orders                                     403
+  ok   admin GET /profiles                                  200
+
+===================================
+passed 19, failed 0</code></pre>
+
+<p>On Windows that script needs Git Bash. The same checks can be run by hand in Postman using the endpoint
+tables above.</p>
+
+<h3>Deliberately not built</h3>
+<p>Listed so nobody assumes it is there: any wallet or payment, so orders are cash on delivery. Refresh
+tokens, password reset, email verification and logout. Product images. Ratings and reviews. Stock levels,
+so an order can be placed for something that is out of stock. A config server and centralised logging.</p>
+<p>Each can be added without changing the seven projects, which is the point of stopping here.</p>
+</section></main>
+</div>
+
+<footer><div class="wrap">Every code block, request and response on this page was taken from the running
+system. The diagrams describe the same build.</div></footer>
+
+<script>
+  hljs.configure({ ignoreUnescapedHTML: true });
+  hljs.highlightAll();
+  var links = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function (l) { l.classList.toggle("on", l.getAttribute("href") === "#" + e.target.id); });
+    });
+  }, { rootMargin: "-10% 0px -75% 0px" });
+  document.querySelectorAll("main section").forEach(function (s) { obs.observe(s); });
+</script>
+</body>
+</html>
