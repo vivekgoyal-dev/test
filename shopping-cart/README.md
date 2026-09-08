@@ -22,6 +22,17 @@ step-by-step setup: [`DOCUMENTATION.html`](DOCUMENTATION.html)** (open it in a b
 Two services call another service, both over Feign, both resolved through Eureka by name:
 cart asks product for prices, order reads the cart and the product owner at checkout.
 
+## Clone and run
+
+```bash
+git clone -b shopping-cart https://github.com/vivekgoyal-dev/test.git
+cd test/shopping-cart
+```
+
+Then create the databases (step 1 below), set `DB_PASSWORD` (step 2), and run `run-local.cmd` on
+Windows or `./run-local.sh` on macOS and Linux. The first run builds all seven projects and takes
+a few minutes; later runs start in about a minute.
+
 ## Running it
 
 **You need:** JDK 17+, MySQL 8, and Eclipse with Spring Tools 4 plus the Lombok agent installed
@@ -49,13 +60,23 @@ export DB_PASSWORD="your-mysql-root-password"    # macOS or Linux
 folder, tick all seven. Then Run As > Spring Boot App, starting `discovery-server` first, the five
 services next, and `api-gateway` last.
 
-From a terminal instead:
+From a terminal instead. Only a JDK is needed, the Maven wrapper fetches Maven itself.
+
+```bat
+:: Windows, from cmd or PowerShell
+run-local.cmd       :: builds anything missing, then starts all seven in their own windows
+stop-local.cmd
+```
 
 ```bash
-./run-local.sh      # starts all seven, logs in logs/
+# macOS or Linux
+./run-local.sh      # builds anything missing, then starts all seven, logs in logs/
 ./smoketest.sh      # drives the whole system through the gateway
 ./stop-local.sh
 ```
+
+`smoketest.sh` is a bash script. On Windows run it from Git Bash, or work through the endpoints in
+Postman instead.
 
 Wait about 30 seconds after startup and check http://localhost:8761. All six applications should be
 listed. Cross-service calls do not work until they are.
@@ -89,10 +110,12 @@ shipping and every rejection in between. Last run: **19 checks, 0 failures**, in
 
 ## Notes
 
-- Ports 8081 to 8085 are the defaults in `application.yml`. `run-local.sh` overrides them on this
-  machine because 8081 and 8082 were already taken; the gateway finds services through Eureka by
-  name, so a port change needs no other edit.
-- The shell scripts need Git Bash on Windows. Eclipse does not need them at all.
+- **Ports 8761 and 8080 to 8085 must be free.** `run-local.cmd` and Eclipse both use exactly the
+  ports in each `application.yml`. `run-local.sh` overrides two of them, because 8081 and 8082 were
+  already taken on the machine this was built on. If a port is busy, change `server.port` in that
+  service's `application.yml`: the gateway finds services through Eureka by name, so nothing else
+  needs editing.
+- `smoketest.sh` and `run-local.sh` are bash. On Windows use `run-local.cmd`, or Git Bash.
 - `ddl-auto: update` creates the tables for you. That is right for development and wrong for a real
   server.
 
