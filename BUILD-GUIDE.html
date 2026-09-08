@@ -1,0 +1,2903 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EShoppingZone Build Guide</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+:root {
+  --ground: #f2f3f7;
+  --surface: #ffffff;
+  --surface-2: #fafbfd;
+  --ink: #15171f;
+  --ink-soft: #545b6d;
+  --ink-faint: #7d849a;
+  --line: #dcdfe9;
+  --accent: #2f3ba0;
+  --accent-ink: #2f3ba0;
+  --accent-wash: #eaecf8;
+  --good: #12664a;
+  --good-wash: #e4f2ec;
+  --signal: #8a4a09;
+  --signal-wash: #fbefe1;
+  --code-bg: #14161d;
+  --code-ink: #dfe3ee;
+  --code-line: #262a36;
+  --kw: #9aa7f5;
+  --str: #8fce9b;
+  --num: #e0b070;
+  --cmt: #6d7488;
+  --typ: #6fc7d8;
+  --ann: #d59ad6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0d0f15;
+    --surface: #151822;
+    --surface-2: #1a1e29;
+    --ink: #e8eaf2;
+    --ink-soft: #a2a9bd;
+    --ink-faint: #79809a;
+    --line: #262b3a;
+    --accent: #97a2f2;
+    --accent-ink: #b4bcf7;
+    --accent-wash: #1b2040;
+    --good: #63c99c;
+    --good-wash: #12291f;
+    --signal: #dfa05c;
+    --signal-wash: #2a1f12;
+    --code-bg: #0a0c12;
+    --code-ink: #dfe3ee;
+    --code-line: #1e2330;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0d0f15;
+  --surface: #151822;
+  --surface-2: #1a1e29;
+  --ink: #e8eaf2;
+  --ink-soft: #a2a9bd;
+  --ink-faint: #79809a;
+  --line: #262b3a;
+  --accent: #97a2f2;
+  --accent-ink: #b4bcf7;
+  --accent-wash: #1b2040;
+  --good: #63c99c;
+  --good-wash: #12291f;
+  --signal: #dfa05c;
+  --signal-wash: #2a1f12;
+  --code-bg: #0a0c12;
+  --code-ink: #dfe3ee;
+  --code-line: #1e2330;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.88em; }
+p code, li code, td code, span code {
+  background: var(--accent-wash); color: var(--accent-ink);
+  padding: 0.1em 0.36em; border-radius: 3px;
+}
+
+/* ---------- masthead ---------- */
+.masthead {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.masthead-inner {
+  max-width: 1180px; margin: 0 auto; padding: 56px 32px 44px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: end;
+}
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px;
+}
+h1 {
+  font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  font-weight: 700; font-size: clamp(2.4rem, 5.2vw, 3.6rem); line-height: 1.03;
+  letter-spacing: -0.02em; margin: 0; text-wrap: balance;
+}
+.standfirst {
+  margin: 18px 0 0; max-width: 60ch; font-size: 1.06rem; color: var(--ink-soft);
+}
+.facts { display: grid; gap: 10px; font-size: 13.5px; }
+.facts div { display: flex; gap: 12px; align-items: baseline; }
+.facts dt {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-faint); min-width: 74px; margin: 0;
+}
+.facts dd { margin: 0; color: var(--ink); font-weight: 500; }
+
+/* ---------- nav ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner {
+  max-width: 1180px; margin: 0 auto; padding: 0 32px;
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: thin;
+}
+.nav a {
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  padding: 13px 14px; font-size: 13.5px; font-weight: 500;
+  color: var(--ink-soft); text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.nav a:hover { color: var(--ink); border-bottom-color: var(--line); }
+.nav a.on { color: var(--accent-ink); border-bottom-color: var(--accent); }
+.nav-n {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px;
+  color: var(--ink-faint); font-weight: 500;
+}
+.nav a.on .nav-n { color: var(--accent-ink); }
+
+/* ---------- layout ---------- */
+main { max-width: 880px; margin: 0 auto; padding: 0 32px 120px; }
+.phase { padding: 68px 0 12px; border-bottom: 1px solid var(--line); }
+.phase:last-child { border-bottom: 0; }
+.phase-head { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 34px; }
+.phase-n {
+  font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 500;
+  color: var(--accent-ink); background: var(--accent-wash);
+  width: 34px; height: 34px; flex: none; border-radius: 50%;
+  display: grid; place-items: center; margin-top: 6px;
+}
+.phase h2 {
+  font-family: "IBM Plex Sans Condensed", sans-serif; font-weight: 700;
+  font-size: 1.95rem; letter-spacing: -0.015em; margin: 0; line-height: 1.16;
+}
+.lede { margin: 8px 0 0; color: var(--ink-soft); max-width: 62ch; }
+.phase > p { max-width: 68ch; }
+.phase h4 {
+  font-family: "IBM Plex Sans Condensed", sans-serif; font-size: 1.12rem;
+  font-weight: 600; margin: 34px 0 10px; letter-spacing: -0.005em;
+}
+
+/* ---------- steps ---------- */
+.step { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 16px; margin: 30px 0; }
+.step-n {
+  font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 500;
+  color: var(--ink-faint); border-top: 2px solid var(--line);
+  padding-top: 8px; text-align: right;
+}
+.step-body > h4 { margin: 2px 0 8px; font-size: 1.05rem; }
+.step-body > p { margin: 0 0 12px; max-width: 66ch; }
+.step-body > p:last-child { margin-bottom: 0; }
+
+/* ---------- code ---------- */
+.file { margin: 16px 0 20px; }
+.file figcaption {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: var(--surface-2); border: 1px solid var(--line); border-bottom: 0;
+  border-radius: 7px 7px 0 0; padding: 8px 12px;
+}
+.path {
+  font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--ink-soft);
+  overflow-x: auto; white-space: nowrap;
+}
+.copy {
+  font-family: "IBM Plex Sans", sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  background: transparent; color: var(--ink-faint);
+  border: 1px solid var(--line); border-radius: 4px; padding: 3px 9px; cursor: pointer;
+}
+.copy:hover { color: var(--ink); border-color: var(--ink-faint); }
+.copy.done { color: var(--good); border-color: var(--good); }
+.file-note { margin: 0; }
+.file pre {
+  margin: 0; background: var(--code-bg); color: var(--code-ink);
+  border-radius: 0 0 7px 7px; padding: 16px 18px; overflow-x: auto;
+  font-size: 12.9px; line-height: 1.62; tab-size: 4;
+}
+.file pre code { font-size: inherit; background: none; color: inherit; padding: 0; }
+.hljs-keyword, .hljs-built_in { color: var(--kw); }
+.hljs-string { color: var(--str); }
+.hljs-number, .hljs-literal { color: var(--num); }
+.hljs-comment, .hljs-doctag { color: var(--cmt); font-style: italic; }
+.hljs-title, .hljs-title.class_, .hljs-title.function_, .hljs-type { color: var(--typ); }
+.hljs-meta, .hljs-attr, .hljs-attribute { color: var(--ann); }
+.hljs-tag { color: var(--cmt); }
+.hljs-name { color: var(--kw); }
+
+/* ---------- wizard ---------- */
+.wizard {
+  display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 0;
+  border: 1px solid var(--line); border-radius: 7px; overflow: hidden; margin: 14px 0 4px;
+  background: var(--surface);
+}
+.wizard table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.wizard td { padding: 7px 14px; border-bottom: 1px solid var(--line); }
+.wizard td:first-child { color: var(--ink-soft); width: 44%; }
+.wizard tr:last-child td { border-bottom: 0; }
+.wizard tr.hi td { background: var(--accent-wash); }
+.wizard tr.hi td:first-child { color: var(--accent-ink); font-weight: 500; }
+.deps { background: var(--surface-2); border-left: 1px solid var(--line); padding: 14px 16px; }
+.deps h5 {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-faint); margin: 0 0 8px; font-weight: 500;
+}
+.deps ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.deps li { font-size: 13px; }
+.deps code { background: none; color: var(--ink); padding: 0; }
+.deps li::before { content: "+ "; color: var(--good); font-family: "IBM Plex Mono", monospace; }
+
+/* ---------- callouts ---------- */
+.check {
+  background: var(--good-wash); border: 1px solid color-mix(in srgb, var(--good) 30%, transparent);
+  border-radius: 7px; padding: 18px 22px; margin: 30px 0;
+}
+.check h4 { margin: 0 0 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 1.05rem; }
+.check-tag {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--good);
+  border: 1px solid color-mix(in srgb, var(--good) 45%, transparent);
+  border-radius: 3px; padding: 2px 7px; font-weight: 500;
+}
+.check p, .check ol, .check ul { margin: 0 0 10px; }
+.check ol, .check ul { padding-left: 20px; }
+.check li { margin-bottom: 5px; }
+.check > :last-child { margin-bottom: 0; }
+.check .file { margin: 12px 0; }
+.final-check {
+  border-top: 1px solid color-mix(in srgb, var(--good) 30%, transparent);
+  padding-top: 12px; margin-top: 14px;
+}
+.warn, .note {
+  border-left: 3px solid var(--signal); background: var(--signal-wash);
+  padding: 12px 18px; margin: 22px 0; border-radius: 0 5px 5px 0; font-size: 14.5px;
+}
+.note { border-left-color: var(--ink-faint); background: var(--surface-2); color: var(--ink-soft); }
+
+/* ---------- architecture ---------- */
+.arch {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 24px; margin: 26px 0;
+}
+.arch-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.node {
+  border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2);
+  padding: 9px 14px; font-size: 13px; font-weight: 500;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.node span { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; color: var(--ink-faint); font-weight: 400; }
+.node.reg { border-color: var(--accent); background: var(--accent-wash); color: var(--accent-ink); }
+.node.reg span { color: var(--accent-ink); opacity: 0.8; }
+.arch-caption { text-align: center; font-size: 12.5px; color: var(--ink-faint); margin: 14px 0; }
+.calls { display: grid; gap: 8px; justify-content: center; }
+.call {
+  font-size: 13.5px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  font-family: "IBM Plex Mono", monospace;
+}
+.call em { font-family: "IBM Plex Sans", sans-serif; font-style: normal; color: var(--ink-faint); font-size: 12.5px; }
+.arrow { color: var(--accent-ink); }
+
+/* ---------- layers + errors + gaps ---------- */
+.layers { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; margin: 22px 0; }
+.layers > div { background: var(--surface); padding: 10px 16px; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+.layers b { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--accent-ink); min-width: 190px; }
+.layers span { font-size: 13.5px; color: var(--ink-soft); }
+.errors { display: grid; gap: 12px; margin: 16px 0; }
+.errors > div { border-left: 3px solid var(--line); padding: 4px 0 4px 16px; }
+.errors b { display: block; font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--signal); margin-bottom: 3px; }
+.errors span { font-size: 14.5px; color: var(--ink-soft); }
+.gaps { padding-left: 20px; max-width: 68ch; }
+.gaps li { margin-bottom: 7px; }
+
+footer {
+  max-width: 880px; margin: 0 auto; padding: 34px 32px 70px;
+  border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .masthead-inner { grid-template-columns: 1fr; padding: 40px 20px 32px; gap: 26px; }
+  .nav-inner, main, footer { padding-left: 20px; padding-right: 20px; }
+  .wizard { grid-template-columns: 1fr; }
+  .deps { border-left: 0; border-top: 1px solid var(--line); }
+  .step { grid-template-columns: 1fr; gap: 6px; }
+  .step-n { border-top: 0; text-align: left; padding-top: 0; }
+  .layers b { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <p class="eyebrow">Build guide &middot; Spring Boot microservices &middot; Eclipse</p>
+      <h1>EShoppingZone</h1>
+      <p class="standfirst">Five Spring Boot services, one registry, built and tested one at a time.
+      Type it in the order below and every phase runs before you start the next.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Stack</dt><dd>Java 17 &middot; Spring Boot 3.3.4</dd></div>
+      <div><dt>Cloud</dt><dd>Spring Cloud 2023.0.3 &middot; Eureka</dd></div>
+      <div><dt>Data</dt><dd>Spring Data JPA &middot; H2 file</dd></div>
+      <div><dt>Testing</dt><dd>Swagger UI &middot; Postman</dd></div>
+      <div><dt>Projects</dt><dd>6</dd></div>
+    </dl>
+  </div>
+</header>
+
+<nav class="nav"><div class="nav-inner"><a href="#phase-0"><span class="nav-n">0</span>Before you start</a><a href="#phase-1"><span class="nav-n">1</span>The registry</a><a href="#phase-2"><span class="nav-n">2</span>product-service</a><a href="#phase-3"><span class="nav-n">3</span>profile-service</a><a href="#phase-4"><span class="nav-n">4</span>wallet-service</a><a href="#phase-5"><span class="nav-n">5</span>cart-service</a><a href="#phase-6"><span class="nav-n">6</span>order-service</a><a href="#wrap"><span class="nav-n">7</span>When it is all running</a></div></nav>
+
+<main>
+<section id="phase-0" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">0</div>
+    <div>
+      <h2>Before you start</h2>
+      <p class="lede">Fifteen minutes of setup, then you never touch it again.</p>
+    </div>
+  </header>
+  
+<p>You are going to build a small e-commerce backend the way real systems are built: as five separate
+Spring Boot applications that find each other through a registry, rather than one big program. There
+is no website and no login. Every endpoint is driven from Swagger UI or Postman, which is exactly how
+a backend developer tests their own work before a frontend exists.</p>
+
+<p>Build them in the order below. Each one runs and is testable on its own before you start the next,
+so you are never debugging five things at once.</p>
+
+<div class="arch">
+  <div class="arch-row">
+    <div class="node reg">discovery-server<span>8761 · Eureka registry</span></div>
+  </div>
+  <p class="arch-caption">Every service below registers itself here on startup.</p>
+  <div class="arch-row">
+    <div class="node">profile-service<span>9081</span></div>
+    <div class="node">product-service<span>9082</span></div>
+    <div class="node">cart-service<span>9083</span></div>
+    <div class="node">order-service<span>9084</span></div>
+    <div class="node">wallet-service<span>9085</span></div>
+  </div>
+  <p class="arch-caption">Only two of them call another service, and both go through the registry by name:</p>
+  <div class="calls">
+    <div class="call"><b>cart-service</b> <span class="arrow">&rarr;</span> <b>product-service</b><em>to price every item at the source</em></div>
+    <div class="call"><b>order-service</b> <span class="arrow">&rarr;</span> <b>wallet-service</b><em>to debit the wallet at checkout</em></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Check your JDK</h4><p>In Eclipse: <b>Window &rsaquo; Preferences &rsaquo; Java &rsaquo; Installed JREs</b>. You need
+<b>JDK 17 or newer</b> selected. Spring Boot 3 will not start on Java 8 or 11.</p></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>Check you have the Spring wizard</h4><p><b>File &rsaquo; New &rsaquo; Other</b> and type <i>spring</i>. If
+<b>Spring Starter Project</b> appears, you are set. That wizard is Spring Initializr built into Eclipse.</p>
+<p>If it is missing, install <b>Spring Tools 4</b> from <b>Help &rsaquo; Eclipse Marketplace</b> and restart. Without
+it you can still follow along: generate each project at <a href="https://start.spring.io">start.spring.io</a>, unzip it,
+then <b>File &rsaquo; Import &rsaquo; Maven &rsaquo; Existing Maven Projects</b>.</p></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>Install Lombok into Eclipse</h4><p>This one catches everyone. Lombok writes the getters and setters
+for you at compile time, and Eclipse needs a small agent installed before it can see them, otherwise your editor
+fills with red errors like <code>getPrice() is undefined</code> even though Maven builds fine.</p>
+<p>Find <code>lombok.jar</code> in your Maven repository (<code>~/.m2/repository/org/projectlombok/lombok/</code>,
+any recent version), then run it and point it at your Eclipse install:</p><figure class="file">
+  <figcaption><span class="path">Terminal / Command Prompt</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-bash">java -jar lombok.jar</code></pre>
+</figure><p>Click <b>Install / Update</b>, restart Eclipse. Do this once, before you write any code.</p></div>
+</div>
+
+<div class="step">
+  <div class="step-n">4</div>
+  <div class="step-body"><h4>Know these two buttons</h4><p><b>Run As &rsaquo; Spring Boot App</b> starts a service. The
+<b>Boot Dashboard</b> (<b>Window &rsaquo; Show View &rsaquo; Other &rsaquo; Boot Dashboard</b>) starts and stops all of
+them from one panel. Worth opening now, you will use it constantly by phase 6.</p></div>
+</div>
+
+<div class="warn"><b>Keep every service running once you start it.</b> By phase 5 the services call each other, and a stopped service looks exactly like a bug in the code you just wrote.</div>
+
+</section><section id="phase-1" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">1</div>
+    <div>
+      <h2>The registry</h2>
+      <p class="lede">One tiny project whose only job is to know where everything else lives.</p>
+    </div>
+  </header>
+  
+<p>Five services need to find each other without anyone hardcoding <code>localhost:9082</code> all over the
+code. Eureka is the phone book: each service registers its name on startup, and a service that wants
+<code>product-service</code> asks the registry rather than remembering a port.</p>
+
+<p>Build it first, because everything else registers with it.</p>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Create the project</h4><p><b>File &rsaquo; New &rsaquo; Spring Starter Project</b>, fill it in exactly like this:</p><div class="wizard">
+  <table><tbody><tr><td>Service URL</td><td><code>https://start.spring.io</code></td></tr><tr><td>Type</td><td><code>Maven</code></td></tr><tr><td>Packaging</td><td><code>Jar</code></td></tr><tr><td>Java Version</td><td><code>17</code></td></tr><tr><td>Language</td><td><code>Java</code></td></tr><tr><td>Group</td><td><code>com.eshoppingzone</code></td></tr><tr><td>Spring Boot Version</td><td><code>3.3.4</code></td></tr><tr><td>Name / Artifact</td><td><code>discovery-server</code></td></tr><tr class="hi"><td>Package</td><td><code>com.eshoppingzone.discovery</code></td></tr></tbody></table>
+  <div class="deps"><h5>Dependencies to tick</h5><ul><li><code>Eureka Server</code></li></ul></div>
+</div></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>Turn the app into a registry</h4><p>Open the generated main class and add one annotation. That single line is the whole server.</p><figure class="file">
+  <figcaption><span class="path">discovery-server/src/main/java/com/eshoppingzone/discovery/DiscoveryServerApplication.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.discovery;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+
+@SpringBootApplication
+@EnableEurekaServer
+public class DiscoveryServerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DiscoveryServerApplication.class, args);
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>Configure it</h4><p>Eclipse generates <code>application.properties</code>. Delete it and create <code>application.yml</code> in the same folder (<code>src/main/resources</code>). The two settings tell Eureka not to register with itself: it is the registry, it has nobody to report to.</p><figure class="file">
+  <figcaption><span class="path">discovery-server/src/main/resources/application.yml</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-yaml">server:
+  port: 8761
+spring:
+  application:
+    name: discovery-server
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false</code></pre>
+</figure></div>
+</div>
+
+<div class="check">
+  <h4><span class="check-tag">Checkpoint</span>Eureka is up</h4>
+  <p>Run As &rsaquo; Spring Boot App, then open <a href="http://localhost:8761">http://localhost:8761</a>.</p>
+<p>You should see the Eureka dashboard with <b>no instances available</b>. That is correct, nothing has registered yet.
+Leave it running.</p>
+</div>
+
+</section><section id="phase-2" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">2</div>
+    <div>
+      <h2>product-service</h2>
+      <p class="lede">The catalog. No dependencies on anything, so it is the right place to learn the shape every service follows.</p>
+    </div>
+  </header>
+  
+<p>Every service you build has the same five layers, and once you have typed them once the other four
+are variations:</p>
+
+<div class="layers">
+  <div><b>entity</b><span>the table</span></div>
+  <div><b>dto</b><span>what the API sends and accepts</span></div>
+  <div><b>repository</b><span>the queries</span></div>
+  <div><b>service</b> + <b>serviceImpl</b><span>the rules</span></div>
+  <div><b>resource</b><span>the HTTP endpoints</span></div>
+</div>
+
+<p>The DTO is worth understanding rather than copying blindly. It is a separate class from the entity so
+that what you store and what you expose can differ. You will see exactly why in phase 3, where the DTO
+is how a password gets accepted on the way in and never sent back out.</p>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Create the project</h4><div class="wizard">
+  <table><tbody><tr><td>Service URL</td><td><code>https://start.spring.io</code></td></tr><tr><td>Type</td><td><code>Maven</code></td></tr><tr><td>Packaging</td><td><code>Jar</code></td></tr><tr><td>Java Version</td><td><code>17</code></td></tr><tr><td>Language</td><td><code>Java</code></td></tr><tr><td>Group</td><td><code>com.eshoppingzone</code></td></tr><tr><td>Spring Boot Version</td><td><code>3.3.4</code></td></tr><tr><td>Name / Artifact</td><td><code>product-service</code></td></tr><tr class="hi"><td>Package</td><td><code>com.eshoppingzone.product</code></td></tr></tbody></table>
+  <div class="deps"><h5>Dependencies to tick</h5><ul><li><code>Spring Web</code></li><li><code>Spring Data JPA</code></li><li><code>H2 Database</code></li><li><code>Eureka Discovery Client</code></li><li><code>Lombok</code></li></ul></div>
+</div></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>Add Swagger to the pom</h4><p>Swagger UI is not in the wizard list, so paste this one block into <code>pom.xml</code>, inside the existing <code>&lt;dependencies&gt;</code> tag. It gives you a clickable page for every endpoint, and it is how you will test everything you write.</p><figure class="file">
+  <figcaption><span class="path">product-service/pom.xml, inside &amp;lt;dependencies&amp;gt;</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springdoc&lt;/groupId&gt;
+    &lt;artifactId&gt;springdoc-openapi-starter-webmvc-ui&lt;/artifactId&gt;
+    &lt;version&gt;2.6.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</figure><p>Save. If Eclipse does not pick it up, right-click the project &rsaquo; <b>Maven &rsaquo; Update Project</b>.</p></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>The entity</h4><p>The four collection fields are the interesting part. A rating is <i>per customer</i>, so it is a map of profile id to stars, not a single number, and the same goes for reviews. <code>@ElementCollection</code> tells JPA to keep each one in its own side table.</p><figure class="file">
+  <figcaption><span class="path">product-service/src/main/java/com/eshoppingzone/product/entity/Product.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.product.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int productId;
+
+    private String productType;
+
+    @Column(unique = true)
+    private String productName;
+
+    private String category;
+    private double price;
+
+    @Column(length = 2000)
+    private String description;
+
+    /** profileId -&gt; stars given. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = &quot;product_rating&quot;, joinColumns = @JoinColumn(name = &quot;product_id&quot;))
+    @MapKeyColumn(name = &quot;user_id&quot;)
+    @Column(name = &quot;stars&quot;)
+    private Map&lt;Integer, Double&gt; rating = new HashMap&lt;&gt;();
+
+    /** profileId -&gt; review text. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = &quot;product_review&quot;, joinColumns = @JoinColumn(name = &quot;product_id&quot;))
+    @MapKeyColumn(name = &quot;user_id&quot;)
+    @Column(name = &quot;review&quot;, length = 2000)
+    private Map&lt;Integer, String&gt; review = new HashMap&lt;&gt;();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = &quot;product_image&quot;, joinColumns = @JoinColumn(name = &quot;product_id&quot;))
+    @Column(name = &quot;image_url&quot;)
+    private List&lt;String&gt; image = new ArrayList&lt;&gt;();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = &quot;product_specification&quot;, joinColumns = @JoinColumn(name = &quot;product_id&quot;))
+    @MapKeyColumn(name = &quot;spec_name&quot;)
+    @Column(name = &quot;spec_value&quot;)
+    private Map&lt;String, String&gt; specification = new HashMap&lt;&gt;();
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">4</div>
+  <div class="step-body"><h4>The DTO</h4><figure class="file">
+  <figcaption><span class="path">product-service/src/main/java/com/eshoppingzone/product/dto/ProductDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.product.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductDto {
+
+    private int productId;
+    private String productType;
+    private String productName;
+    private String category;
+    private double price;
+    private String description;
+    private Map&lt;Integer, Double&gt; rating = new HashMap&lt;&gt;();
+    private Map&lt;Integer, String&gt; review = new HashMap&lt;&gt;();
+    private List&lt;String&gt; image = new ArrayList&lt;&gt;();
+    private Map&lt;String, String&gt; specification = new HashMap&lt;&gt;();
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">5</div>
+  <div class="step-body"><h4>The repository</h4><p>You write no SQL. Spring reads the method names and writes the queries: <code>findByCategory</code> becomes <i>where category = ?</i>. The names have to match the field names exactly.</p><figure class="file">
+  <figcaption><span class="path">product-service/src/main/java/com/eshoppingzone/product/repository/ProductRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.product.repository;
+
+import com.eshoppingzone.product.entity.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface ProductRepository extends JpaRepository&lt;Product, Integer&gt; {
+
+    Optional&lt;Product&gt; findByProductName(String productName);
+
+    List&lt;Product&gt; findByCategory(String category);
+
+    List&lt;Product&gt; findByProductType(String productType);
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">6</div>
+  <div class="step-body"><h4>The service interface and its implementation</h4><p><code>ResponseStatusException</code> is how a rule turns into an HTTP response: 404 for an id that does not exist, 409 when a merchant lists the same product name twice. No try/catch anywhere else: throw it and Spring turns it into the right status code.</p><figure class="file">
+  <figcaption><span class="path">product-service/src/main/java/com/eshoppingzone/product/service/ProductService.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.product.service;
+
+import com.eshoppingzone.product.dto.ProductDto;
+
+import java.util.List;
+
+public interface ProductService {
+
+    ProductDto addProducts(ProductDto product);
+
+    List&lt;ProductDto&gt; getAllProducts();
+
+    ProductDto getProductById(int productId);
+
+    ProductDto getProductByName(String productName);
+
+    ProductDto updateProducts(ProductDto product);
+
+    void deleteProductById(int productId);
+
+    List&lt;ProductDto&gt; getProductByCategory(String category);
+
+    List&lt;ProductDto&gt; getProductByType(String productType);
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">product-service/src/main/java/com/eshoppingzone/product/service/ProductServiceImpl.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.product.service;
+
+import com.eshoppingzone.product.dto.ProductDto;
+import com.eshoppingzone.product.entity.Product;
+import com.eshoppingzone.product.repository.ProductRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+public class ProductServiceImpl implements ProductService {
+
+    private final ProductRepository productRepository;
+
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    @Override
+    public ProductDto addProducts(ProductDto dto) {
+        productRepository.findByProductName(dto.getProductName()).ifPresent(p -&gt; {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;product already exists: &quot; + p.getProductName());
+        });
+        Product entity = toEntity(dto);
+        entity.setProductId(0);
+        return toDto(productRepository.save(entity));
+    }
+
+    @Override
+    public List&lt;ProductDto&gt; getAllProducts() {
+        return productRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public ProductDto getProductById(int productId) {
+        return toDto(productRepository.findById(productId)
+                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no product &quot; + productId)));
+    }
+
+    @Override
+    public ProductDto getProductByName(String productName) {
+        return toDto(productRepository.findByProductName(productName)
+                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no product &quot; + productName)));
+    }
+
+    @Override
+    public ProductDto updateProducts(ProductDto dto) {
+        if (!productRepository.existsById(dto.getProductId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no product &quot; + dto.getProductId());
+        }
+        return toDto(productRepository.save(toEntity(dto)));
+    }
+
+    @Override
+    public void deleteProductById(int productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no product &quot; + productId);
+        }
+        productRepository.deleteById(productId);
+    }
+
+    @Override
+    public List&lt;ProductDto&gt; getProductByCategory(String category) {
+        return productRepository.findByCategory(category).stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public List&lt;ProductDto&gt; getProductByType(String productType) {
+        return productRepository.findByProductType(productType).stream().map(this::toDto).toList();
+    }
+
+    private ProductDto toDto(Product entity) {
+        ProductDto dto = new ProductDto();
+        BeanUtils.copyProperties(entity, dto);
+        return dto;
+    }
+
+    private Product toEntity(ProductDto dto) {
+        Product entity = new Product();
+        BeanUtils.copyProperties(dto, entity);
+        return entity;
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">7</div>
+  <div class="step-body"><h4>The endpoints</h4><figure class="file">
+  <figcaption><span class="path">product-service/src/main/java/com/eshoppingzone/product/resource/ProductResource.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.product.resource;
+
+import com.eshoppingzone.product.dto.ProductDto;
+import com.eshoppingzone.product.service.ProductService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/products&quot;)
+public class ProductResource {
+
+    private final ProductService productService;
+
+    public ProductResource(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;ProductDto&gt; addProducts(@RequestBody ProductDto product) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.addProducts(product));
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;ProductDto&gt;&gt; getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+
+    @GetMapping(&quot;/{productId}&quot;)
+    public ResponseEntity&lt;ProductDto&gt; getProductById(@PathVariable int productId) {
+        return ResponseEntity.ok(productService.getProductById(productId));
+    }
+
+    @GetMapping(&quot;/name/{productName}&quot;)
+    public ResponseEntity&lt;ProductDto&gt; getProductByName(@PathVariable String productName) {
+        return ResponseEntity.ok(productService.getProductByName(productName));
+    }
+
+    @GetMapping(&quot;/type/{productType}&quot;)
+    public ResponseEntity&lt;List&lt;ProductDto&gt;&gt; getProductByType(@PathVariable String productType) {
+        return ResponseEntity.ok(productService.getProductByType(productType));
+    }
+
+    @GetMapping(&quot;/category/{category}&quot;)
+    public ResponseEntity&lt;List&lt;ProductDto&gt;&gt; getProductsByCategory(@PathVariable String category) {
+        return ResponseEntity.ok(productService.getProductByCategory(category));
+    }
+
+    @PutMapping
+    public ResponseEntity&lt;ProductDto&gt; updateProduct(@RequestBody ProductDto product) {
+        return ResponseEntity.ok(productService.updateProducts(product));
+    }
+
+    @DeleteMapping(&quot;/{productId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteProduct(@PathVariable int productId) {
+        productService.deleteProductById(productId);
+        return ResponseEntity.noContent().build();
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">8</div>
+  <div class="step-body"><h4>Configure it</h4><p>Again: delete <code>application.properties</code>, create <code>application.yml</code>. This sets the port, points H2 at a file so your data survives a restart, and tells the service where Eureka lives.</p><figure class="file">
+  <figcaption><span class="path">product-service/src/main/resources/application.yml</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-yaml">server:
+  port: 9082
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:h2:file:./data/productdb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka</code></pre>
+</figure></div>
+</div>
+
+<div class="check">
+  <h4><span class="check-tag">Checkpoint</span>Products work end to end</h4>
+  <p>Run it, then open <a href="http://localhost:9082/swagger-ui.html">http://localhost:9082/swagger-ui.html</a>.</p>
+<p>Use <b>POST /products</b> &rsaquo; Try it out with this body:</p><figure class="file">
+  <figcaption><span class="path">Swagger request body</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-json">{
+  &quot;productName&quot;: &quot;Kindle Paperwhite&quot;,
+  &quot;productType&quot;: &quot;Electronics&quot;,
+  &quot;category&quot;: &quot;electronics&quot;,
+  &quot;price&quot;: 12999,
+  &quot;description&quot;: &quot;6.8 inch e-reader&quot;,
+  &quot;specification&quot;: { &quot;storage&quot;: &quot;16GB&quot; }
+}</code></pre>
+</figure><p>Then <b>GET /products/category/electronics</b> should return it, and <b>POST</b>ing the same name again should
+give you <b>409</b>. Check <a href="http://localhost:8761">the Eureka dashboard</a> too. <code>PRODUCT-SERVICE</code>
+now appears in the instances list. That is the registration working.</p>
+</div>
+
+<div class="note">Registration takes about 30 seconds to show up. If the dashboard is empty, wait rather than debug.</div>
+
+</section><section id="phase-3" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">3</div>
+    <div>
+      <h2>profile-service</h2>
+      <p class="lede">Customers, merchants and delivery agents. Same five layers, one new idea.</p>
+    </div>
+  </header>
+  
+<p>The new idea is that the DTO earns its keep. <code>UserProfile</code> stores a password;
+<code>UserProfileDto</code> marks that field <code>WRITE_ONLY</code>, so it is accepted when someone
+registers and silently dropped from every response. Storing something you never return is not possible
+with one shared class.</p>
+
+<p>The <code>profileId</code> this service hands out is the customer id used everywhere else: it becomes
+their cart id and their wallet id. Note the first one you create.</p>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Create the project</h4><div class="wizard">
+  <table><tbody><tr><td>Service URL</td><td><code>https://start.spring.io</code></td></tr><tr><td>Type</td><td><code>Maven</code></td></tr><tr><td>Packaging</td><td><code>Jar</code></td></tr><tr><td>Java Version</td><td><code>17</code></td></tr><tr><td>Language</td><td><code>Java</code></td></tr><tr><td>Group</td><td><code>com.eshoppingzone</code></td></tr><tr><td>Spring Boot Version</td><td><code>3.3.4</code></td></tr><tr><td>Name / Artifact</td><td><code>profile-service</code></td></tr><tr class="hi"><td>Package</td><td><code>com.eshoppingzone.profile</code></td></tr></tbody></table>
+  <div class="deps"><h5>Dependencies to tick</h5><ul><li><code>Spring Web</code></li><li><code>Spring Data JPA</code></li><li><code>H2 Database</code></li><li><code>Eureka Discovery Client</code></li><li><code>Lombok</code></li></ul></div>
+</div><p>Add the same springdoc block to <code>pom.xml</code> as in phase 2. Do this for every service from here on.</p></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>The role constants</h4><p>Three fixed strings, in one place, so a typo cannot invent a fourth role.</p><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/pojo/Role.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.pojo;
+
+/** The three roles the site knows about. */
+public final class Role {
+
+    public static final String CUSTOMER = &quot;Customer&quot;;
+    public static final String MERCHANT = &quot;Merchant&quot;;
+    public static final String DELIVERY_AGENT = &quot;DeliveryAgent&quot;;
+
+    private Role() {
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>The entities</h4><p><code>Address</code> is <code>@Embeddable</code>, not an entity: an address has no life of its own, it belongs to the profile that owns it, so it has no id and no table of its own.</p><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/pojo/Address.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.pojo;
+
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Embeddable
+public class Address {
+
+    private int houseNumber;
+    private String streetName;
+    private String colonyName;
+    private String city;
+    private String state;
+    private int pincode;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/pojo/UserProfile.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.pojo;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class UserProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int profileId;
+
+    private String fullName;
+    private String image;
+    private String emailId;
+
+    @Column(unique = true)
+    private Long mobileNumber;
+
+    private String about;
+    private LocalDate dateOfBirth;
+    private String gender;
+    private String role;
+    private String password;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = &quot;user_address&quot;, joinColumns = @JoinColumn(name = &quot;profile_id&quot;))
+    private List&lt;Address&gt; addresses = new ArrayList&lt;&gt;();
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">4</div>
+  <div class="step-body"><h4>The DTO</h4><p>Look at the <code>@JsonProperty</code> line. That is the whole point of this class.</p><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/dto/UserProfileDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.dto;
+
+import com.eshoppingzone.profile.pojo.Address;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserProfileDto {
+
+    private int profileId;
+    private String fullName;
+    private String image;
+    private String emailId;
+    private Long mobileNumber;
+    private String about;
+    private LocalDate dateOfBirth;
+    private String gender;
+    private String role;
+
+    /** Accepted on the way in, never sent back out. */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
+
+    private List&lt;Address&gt; addresses = new ArrayList&lt;&gt;();
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">5</div>
+  <div class="step-body"><h4>The repository</h4><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/repository/ProfileRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.repository;
+
+import com.eshoppingzone.profile.pojo.UserProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProfileRepository extends JpaRepository&lt;UserProfile, Integer&gt; {
+
+    UserProfile findByMobileNumber(Long mobileNumber);
+
+    UserProfile findByFullName(String fullName);
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">6</div>
+  <div class="step-body"><h4>The service</h4><p>Three registration methods that differ only by the role they stamp, so they share one private method. The mobile number check runs before the save, and that is what makes a duplicate a clean 409 instead of a database error.</p><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/service/ProfileService.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.service;
+
+import com.eshoppingzone.profile.dto.UserProfileDto;
+
+import java.util.List;
+
+public interface ProfileService {
+
+    UserProfileDto addNewCustomerProfile(UserProfileDto profile);
+
+    UserProfileDto addNewMerchantProfile(UserProfileDto profile);
+
+    UserProfileDto addNewDeliveryProfile(UserProfileDto profile);
+
+    List&lt;UserProfileDto&gt; getAllProfiles();
+
+    UserProfileDto getByProfileId(int profileId);
+
+    UserProfileDto updateProfile(UserProfileDto profile);
+
+    void deleteProfile(int profileId);
+
+    UserProfileDto findByMobileNo(Long mobileNumber);
+
+    UserProfileDto getByUserName(String fullName);
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/service/ProfileServiceImpl.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.service;
+
+import com.eshoppingzone.profile.dto.UserProfileDto;
+import com.eshoppingzone.profile.pojo.Role;
+import com.eshoppingzone.profile.pojo.UserProfile;
+import com.eshoppingzone.profile.repository.ProfileRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+public class ProfileServiceImpl implements ProfileService {
+
+    private final ProfileRepository repository;
+
+    public ProfileServiceImpl(ProfileRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public UserProfileDto addNewCustomerProfile(UserProfileDto profile) {
+        return addWithRole(profile, Role.CUSTOMER);
+    }
+
+    @Override
+    public UserProfileDto addNewMerchantProfile(UserProfileDto profile) {
+        return addWithRole(profile, Role.MERCHANT);
+    }
+
+    @Override
+    public UserProfileDto addNewDeliveryProfile(UserProfileDto profile) {
+        return addWithRole(profile, Role.DELIVERY_AGENT);
+    }
+
+    private UserProfileDto addWithRole(UserProfileDto dto, String role) {
+        if (dto.getMobileNumber() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;mobileNumber is required&quot;);
+        }
+        if (repository.findByMobileNumber(dto.getMobileNumber()) != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;mobile number already registered&quot;);
+        }
+        UserProfile entity = toEntity(dto);
+        entity.setProfileId(0);
+        entity.setRole(role);
+        return toDto(repository.save(entity));
+    }
+
+    @Override
+    public List&lt;UserProfileDto&gt; getAllProfiles() {
+        return repository.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public UserProfileDto getByProfileId(int profileId) {
+        return toDto(findOrThrow(profileId));
+    }
+
+    @Override
+    public UserProfileDto updateProfile(UserProfileDto dto) {
+        UserProfile existing = findOrThrow(dto.getProfileId());
+        UserProfile updated = toEntity(dto);
+        // role and password are not editable through this endpoint
+        updated.setRole(existing.getRole());
+        if (updated.getPassword() == null) {
+            updated.setPassword(existing.getPassword());
+        }
+        return toDto(repository.save(updated));
+    }
+
+    @Override
+    public void deleteProfile(int profileId) {
+        repository.delete(findOrThrow(profileId));
+    }
+
+    @Override
+    public UserProfileDto findByMobileNo(Long mobileNumber) {
+        UserProfile profile = repository.findByMobileNumber(mobileNumber);
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no profile for mobile &quot; + mobileNumber);
+        }
+        return toDto(profile);
+    }
+
+    @Override
+    public UserProfileDto getByUserName(String fullName) {
+        UserProfile profile = repository.findByFullName(fullName);
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no profile named &quot; + fullName);
+        }
+        return toDto(profile);
+    }
+
+    private UserProfile findOrThrow(int profileId) {
+        return repository.findById(profileId)
+                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no profile &quot; + profileId));
+    }
+
+    private UserProfileDto toDto(UserProfile entity) {
+        UserProfileDto dto = new UserProfileDto();
+        BeanUtils.copyProperties(entity, dto);
+        return dto;
+    }
+
+    private UserProfile toEntity(UserProfileDto dto) {
+        UserProfile entity = new UserProfile();
+        BeanUtils.copyProperties(dto, entity);
+        return entity;
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">7</div>
+  <div class="step-body"><h4>The endpoints</h4><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/java/com/eshoppingzone/profile/resource/ProfileResource.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.profile.resource;
+
+import com.eshoppingzone.profile.dto.UserProfileDto;
+import com.eshoppingzone.profile.service.ProfileService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/profiles&quot;)
+public class ProfileResource {
+
+    private final ProfileService service;
+
+    public ProfileResource(ProfileService service) {
+        this.service = service;
+    }
+
+    @PostMapping(&quot;/customer&quot;)
+    public ResponseEntity&lt;UserProfileDto&gt; addNewCustomerProfile(@RequestBody UserProfileDto profile) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addNewCustomerProfile(profile));
+    }
+
+    @PostMapping(&quot;/merchant&quot;)
+    public ResponseEntity&lt;UserProfileDto&gt; addNewMerchantProfile(@RequestBody UserProfileDto profile) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addNewMerchantProfile(profile));
+    }
+
+    @PostMapping(&quot;/delivery&quot;)
+    public ResponseEntity&lt;UserProfileDto&gt; addNewDeliveryProfile(@RequestBody UserProfileDto profile) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addNewDeliveryProfile(profile));
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;UserProfileDto&gt;&gt; getAllProfiles() {
+        return ResponseEntity.ok(service.getAllProfiles());
+    }
+
+    @GetMapping(&quot;/{profileId}&quot;)
+    public ResponseEntity&lt;UserProfileDto&gt; getByProfileId(@PathVariable int profileId) {
+        return ResponseEntity.ok(service.getByProfileId(profileId));
+    }
+
+    @GetMapping(&quot;/phone/{mobileNumber}&quot;)
+    public ResponseEntity&lt;UserProfileDto&gt; getByPhoneNumber(@PathVariable Long mobileNumber) {
+        return ResponseEntity.ok(service.findByMobileNo(mobileNumber));
+    }
+
+    @GetMapping(&quot;/username/{fullName}&quot;)
+    public ResponseEntity&lt;UserProfileDto&gt; getByUserName(@PathVariable String fullName) {
+        return ResponseEntity.ok(service.getByUserName(fullName));
+    }
+
+    @PutMapping
+    public ResponseEntity&lt;UserProfileDto&gt; updateProfile(@RequestBody UserProfileDto profile) {
+        return ResponseEntity.ok(service.updateProfile(profile));
+    }
+
+    @DeleteMapping(&quot;/{profileId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteProfile(@PathVariable int profileId) {
+        service.deleteProfile(profileId);
+        return ResponseEntity.noContent().build();
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">8</div>
+  <div class="step-body"><h4>Configure it</h4><figure class="file">
+  <figcaption><span class="path">profile-service/src/main/resources/application.yml</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-yaml">server:
+  port: 9081
+spring:
+  application:
+    name: profile-service
+  datasource:
+    url: jdbc:h2:file:./data/profiledb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka</code></pre>
+</figure></div>
+</div>
+
+<div class="check">
+  <h4><span class="check-tag">Checkpoint</span>A customer can register</h4>
+  <p><a href="http://localhost:9081/swagger-ui.html">Swagger on 9081</a> &rsaquo;
+<b>POST /profiles/customer</b>:</p><figure class="file">
+  <figcaption><span class="path">Swagger request body</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-json">{
+  &quot;fullName&quot;: &quot;Asha Rao&quot;,
+  &quot;emailId&quot;: &quot;asha@example.com&quot;,
+  &quot;mobileNumber&quot;: 9812345670,
+  &quot;gender&quot;: &quot;F&quot;,
+  &quot;dateOfBirth&quot;: &quot;1996-02-20&quot;,
+  &quot;password&quot;: &quot;secret&quot;,
+  &quot;addresses&quot;: [
+    { &quot;houseNumber&quot;: 12, &quot;streetName&quot;: &quot;MG Road&quot;, &quot;colonyName&quot;: &quot;Indiranagar&quot;,
+      &quot;city&quot;: &quot;Bengaluru&quot;, &quot;state&quot;: &quot;Karnataka&quot;, &quot;pincode&quot;: 560038 }
+  ]
+}</code></pre>
+</figure><p>Three things to confirm: the response has a <b>profileId</b> (write it down), the response contains
+<b>no password field</b>, and posting the same mobile number again gives <b>409</b>.</p>
+</div>
+
+</section><section id="phase-4" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">4</div>
+    <div>
+      <h2>wallet-service</h2>
+      <p class="lede">Money. The first service where being sloppy has consequences.</p>
+    </div>
+  </header>
+  
+<p>Two rules make this service trustworthy, and both are worth understanding before you type them.</p>
+
+<p><b>The balance never moves without a statement row.</b> Every deposit and every payment writes its own
+row saying what happened, when, and for which order. That is why <code>record(...)</code> is called inside
+both money methods and never skipped.</p>
+
+<p><b>A payment that cannot be afforded is refused before anything changes.</b> The balance check happens
+first; if it fails, nothing is written at all.</p>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Create the project</h4><div class="wizard">
+  <table><tbody><tr><td>Service URL</td><td><code>https://start.spring.io</code></td></tr><tr><td>Type</td><td><code>Maven</code></td></tr><tr><td>Packaging</td><td><code>Jar</code></td></tr><tr><td>Java Version</td><td><code>17</code></td></tr><tr><td>Language</td><td><code>Java</code></td></tr><tr><td>Group</td><td><code>com.eshoppingzone</code></td></tr><tr><td>Spring Boot Version</td><td><code>3.3.4</code></td></tr><tr><td>Name / Artifact</td><td><code>wallet-service</code></td></tr><tr class="hi"><td>Package</td><td><code>com.eshoppingzone.wallet</code></td></tr></tbody></table>
+  <div class="deps"><h5>Dependencies to tick</h5><ul><li><code>Spring Web</code></li><li><code>Spring Data JPA</code></li><li><code>H2 Database</code></li><li><code>Eureka Discovery Client</code></li><li><code>Lombok</code></li></ul></div>
+</div></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>The entities</h4><p>A wallet has many statements, and each statement points back at its wallet. That loop would make Jackson serialise forever, which is what <code>@ToString.Exclude</code> and <code>@EqualsAndHashCode.Exclude</code> are guarding against. The DTO in the next step is what actually keeps the loop out of the JSON.</p><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/pojo/Ewallet.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.pojo;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Ewallet {
+
+    /** Not generated: the wallet id IS the customer&#x27;s profile id. */
+    @Id
+    private Integer walletId;
+
+    private Double currentBalance;
+
+    @OneToMany(mappedBy = &quot;ewallet&quot;, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List&lt;Statement&gt; statements = new ArrayList&lt;&gt;();
+
+    public Ewallet(Integer walletId, Double currentBalance) {
+        this.walletId = walletId;
+        this.currentBalance = currentBalance;
+    }
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/pojo/Statement.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.pojo;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Statement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer statementId;
+
+    private String transactionType;
+    private Double amount;
+    private LocalDateTime dateTime;
+    private Integer orderId;
+    private String transactionRemarks;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;wallet_id&quot;)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Ewallet ewallet;
+
+    public Statement(Ewallet ewallet, String transactionType, Double amount, LocalDateTime dateTime, Integer orderId,
+                     String transactionRemarks) {
+        this.ewallet = ewallet;
+        this.transactionType = transactionType;
+        this.amount = amount;
+        this.dateTime = dateTime;
+        this.orderId = orderId;
+        this.transactionRemarks = transactionRemarks;
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>The DTOs</h4><p><code>StatementDto</code> carries a plain <code>walletId</code> instead of the whole wallet object. The loop is broken by design rather than by annotation.</p><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/dto/EwalletDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class EwalletDto {
+
+    private Integer walletId;
+    private Double currentBalance;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/dto/StatementDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class StatementDto {
+
+    private Integer statementId;
+    private Integer walletId;
+    private String transactionType;
+    private Double amount;
+    private LocalDateTime dateTime;
+    private Integer orderId;
+    private String transactionRemarks;
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">4</div>
+  <div class="step-body"><h4>The repositories</h4><p><code>findByEwalletWalletId</code> reads as <i>walk into the ewallet field, then its walletId</i>. Spring builds the join from the name.</p><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/repository/EwalletRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.repository;
+
+import com.eshoppingzone.wallet.pojo.Ewallet;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface EwalletRepository extends JpaRepository&lt;Ewallet, Integer&gt; {
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/repository/StatementsRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.repository;
+
+import com.eshoppingzone.wallet.pojo.Statement;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface StatementsRepository extends JpaRepository&lt;Statement, Integer&gt; {
+
+    List&lt;Statement&gt; findByEwalletWalletId(Integer walletId);
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">5</div>
+  <div class="step-body"><h4>The service</h4><p><code>@Transactional</code> on the money methods means the balance update and the statement row are one unit: either both land or neither does.</p><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/service/EwalletService.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.service;
+
+import com.eshoppingzone.wallet.dto.EwalletDto;
+import com.eshoppingzone.wallet.dto.StatementDto;
+
+import java.util.List;
+
+public interface EwalletService {
+
+    List&lt;EwalletDto&gt; getWallets();
+
+    EwalletDto addWallet(Integer walletId);
+
+    EwalletDto addmoney(int walletId, double amount, String remarks);
+
+    EwalletDto pay(int walletId, double amount, int orderId, String remarks);
+
+    EwalletDto getById(int walletId);
+
+    List&lt;StatementDto&gt; getStatementsById(int walletId);
+
+    List&lt;StatementDto&gt; getStatements();
+
+    void deleteById(int walletId);
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/service/EwalletServiceImpl.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.service;
+
+import com.eshoppingzone.wallet.dto.EwalletDto;
+import com.eshoppingzone.wallet.dto.StatementDto;
+import com.eshoppingzone.wallet.pojo.Ewallet;
+import com.eshoppingzone.wallet.pojo.Statement;
+import com.eshoppingzone.wallet.repository.EwalletRepository;
+import com.eshoppingzone.wallet.repository.StatementsRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class EwalletServiceImpl implements EwalletService {
+
+    public static final String DEPOSIT = &quot;Deposit&quot;;
+    public static final String WITHDRAW = &quot;Withdraw&quot;;
+
+    private final EwalletRepository repo;
+    private final StatementsRepository statementrepo;
+
+    public EwalletServiceImpl(EwalletRepository repo, StatementsRepository statementrepo) {
+        this.repo = repo;
+        this.statementrepo = statementrepo;
+    }
+
+    @Override
+    public List&lt;EwalletDto&gt; getWallets() {
+        return repo.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public EwalletDto addWallet(Integer walletId) {
+        if (repo.existsById(walletId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;wallet &quot; + walletId + &quot; already exists&quot;);
+        }
+        return toDto(repo.save(new Ewallet(walletId, 0.0)));
+    }
+
+    @Override
+    public EwalletDto getById(int walletId) {
+        return toDto(findOrThrow(walletId));
+    }
+
+    @Override
+    @Transactional
+    public EwalletDto addmoney(int walletId, double amount, String remarks) {
+        Ewallet wallet = findOrThrow(walletId);
+        requirePositive(amount);
+        wallet.setCurrentBalance(wallet.getCurrentBalance() + amount);
+        record(wallet, DEPOSIT, amount, null, remarks);
+        return toDto(repo.save(wallet));
+    }
+
+    @Override
+    @Transactional
+    public EwalletDto pay(int walletId, double amount, int orderId, String remarks) {
+        Ewallet wallet = findOrThrow(walletId);
+        requirePositive(amount);
+        if (wallet.getCurrentBalance() &lt; amount) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    &quot;insufficient balance: has &quot; + wallet.getCurrentBalance() + &quot;, needs &quot; + amount);
+        }
+        wallet.setCurrentBalance(wallet.getCurrentBalance() - amount);
+        record(wallet, WITHDRAW, amount, orderId, remarks);
+        return toDto(repo.save(wallet));
+    }
+
+    /** The balance never moves without a statement row recording why. */
+    private void record(Ewallet wallet, String type, double amount, Integer orderId, String remarks) {
+        statementrepo.save(new Statement(wallet, type, amount, LocalDateTime.now(), orderId, remarks));
+    }
+
+    private void requirePositive(double amount) {
+        if (amount &lt;= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;amount must be positive&quot;);
+        }
+    }
+
+    @Override
+    public List&lt;StatementDto&gt; getStatementsById(int walletId) {
+        findOrThrow(walletId);
+        return statementrepo.findByEwalletWalletId(walletId).stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public List&lt;StatementDto&gt; getStatements() {
+        return statementrepo.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(int walletId) {
+        repo.delete(findOrThrow(walletId));
+    }
+
+    private Ewallet findOrThrow(int walletId) {
+        return repo.findById(walletId)
+                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no wallet &quot; + walletId));
+    }
+
+    private EwalletDto toDto(Ewallet wallet) {
+        return new EwalletDto(wallet.getWalletId(), wallet.getCurrentBalance());
+    }
+
+    private StatementDto toDto(Statement s) {
+        return new StatementDto(s.getStatementId(), s.getEwallet().getWalletId(), s.getTransactionType(), s.getAmount(),
+                s.getDateTime(), s.getOrderId(), s.getTransactionRemarks());
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">6</div>
+  <div class="step-body"><h4>The endpoints</h4><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/java/com/eshoppingzone/wallet/resource/WalletResource.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.wallet.resource;
+
+import com.eshoppingzone.wallet.dto.EwalletDto;
+import com.eshoppingzone.wallet.dto.StatementDto;
+import com.eshoppingzone.wallet.service.EwalletService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/wallets&quot;)
+public class WalletResource {
+
+    private final EwalletService service;
+
+    public WalletResource(EwalletService service) {
+        this.service = service;
+    }
+
+    /** Opens a wallet; the wallet id is the customer&#x27;s profile id. */
+    @PostMapping(&quot;/{walletId}&quot;)
+    public ResponseEntity&lt;EwalletDto&gt; addNewWallet(@PathVariable Integer walletId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addWallet(walletId));
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;EwalletDto&gt;&gt; getAllWallet() {
+        return ResponseEntity.ok(service.getWallets());
+    }
+
+    @GetMapping(&quot;/{walletId}&quot;)
+    public ResponseEntity&lt;Double&gt; getById(@PathVariable int walletId) {
+        return ResponseEntity.ok(service.getById(walletId).getCurrentBalance());
+    }
+
+    @PutMapping(&quot;/{walletId}/add&quot;)
+    public ResponseEntity&lt;EwalletDto&gt; addMoney(@PathVariable int walletId, @RequestParam double amount,
+                                               @RequestParam(defaultValue = &quot;Wallet top up&quot;) String remarks) {
+        return ResponseEntity.ok(service.addmoney(walletId, amount, remarks));
+    }
+
+    @PutMapping(&quot;/{walletId}/pay&quot;)
+    public ResponseEntity&lt;EwalletDto&gt; payMoney(@PathVariable int walletId, @RequestParam double amount,
+                                               @RequestParam int orderId,
+                                               @RequestParam(defaultValue = &quot;Order payment&quot;) String remarks) {
+        return ResponseEntity.ok(service.pay(walletId, amount, orderId, remarks));
+    }
+
+    @GetMapping(&quot;/{walletId}/statements&quot;)
+    public ResponseEntity&lt;List&lt;StatementDto&gt;&gt; getStatementsById(@PathVariable int walletId) {
+        return ResponseEntity.ok(service.getStatementsById(walletId));
+    }
+
+    @GetMapping(&quot;/statements&quot;)
+    public ResponseEntity&lt;List&lt;StatementDto&gt;&gt; getStatements() {
+        return ResponseEntity.ok(service.getStatements());
+    }
+
+    @DeleteMapping(&quot;/{walletId}&quot;)
+    public ResponseEntity&lt;Void&gt; deleteById(@PathVariable int walletId) {
+        service.deleteById(walletId);
+        return ResponseEntity.noContent().build();
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">7</div>
+  <div class="step-body"><h4>Configure it</h4><figure class="file">
+  <figcaption><span class="path">wallet-service/src/main/resources/application.yml</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-yaml">server:
+  port: 9085
+spring:
+  application:
+    name: wallet-service
+  datasource:
+    url: jdbc:h2:file:./data/walletdb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka</code></pre>
+</figure></div>
+</div>
+
+<div class="check">
+  <h4><span class="check-tag">Checkpoint</span>Money behaves</h4>
+  <p><a href="http://localhost:9085/swagger-ui.html">Swagger on 9085</a>, using the profileId from phase 3:</p>
+<ol>
+  <li><b>POST /wallets/1</b> opens the wallet at a balance of 0</li>
+  <li><b>PUT /wallets/1/add?amount=20000</b> takes the balance to 20000</li>
+  <li><b>PUT /wallets/1/pay?amount=500&amp;orderId=1</b> takes it to 19500</li>
+  <li><b>PUT /wallets/1/pay?amount=999999&amp;orderId=1</b> gives <b>400</b>, and the balance is still 19500</li>
+  <li><b>GET /wallets/1/statements</b> shows one Deposit and one Withdraw, both with a timestamp</li>
+</ol>
+<p>Step 4 is the one that matters. If a payment you cannot afford goes through, stop and fix it before phase 6.</p>
+</div>
+
+</section><section id="phase-5" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">5</div>
+    <div>
+      <h2>cart-service</h2>
+      <p class="lede">The first service that calls another one. This is where it becomes a microservice system.</p>
+    </div>
+  </header>
+  
+<p>A cart has to know what a Kindle costs. It does not store prices and it does not trust the caller to
+send one. It asks <code>product-service</code>. Two pieces make that work:</p>
+
+<p><b><code>@LoadBalanced RestTemplate</code></b> is a bean in the main class. It lets you write a URL with a
+<i>service name</i> where the host would normally go: <code>http://product-service/products/name/...</code>.
+The registry from phase 1 turns that name into a real address at call time, so nothing in your code knows or
+cares which port product-service is on.</p>
+
+<p><b>The price is overwritten, always.</b> Look at <code>save(...)</code>: whatever price arrives in the request
+is discarded and replaced with the one product-service returned. Trusting a client-supplied price is how
+shopping carts get exploited.</p>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Create the project</h4><div class="wizard">
+  <table><tbody><tr><td>Service URL</td><td><code>https://start.spring.io</code></td></tr><tr><td>Type</td><td><code>Maven</code></td></tr><tr><td>Packaging</td><td><code>Jar</code></td></tr><tr><td>Java Version</td><td><code>17</code></td></tr><tr><td>Language</td><td><code>Java</code></td></tr><tr><td>Group</td><td><code>com.eshoppingzone</code></td></tr><tr><td>Spring Boot Version</td><td><code>3.3.4</code></td></tr><tr><td>Name / Artifact</td><td><code>cart-service</code></td></tr><tr class="hi"><td>Package</td><td><code>com.eshoppingzone.cart</code></td></tr></tbody></table>
+  <div class="deps"><h5>Dependencies to tick</h5><ul><li><code>Spring Web</code></li><li><code>Spring Data JPA</code></li><li><code>H2 Database</code></li><li><code>Eureka Discovery Client</code></li><li><code>Lombok</code></li></ul></div>
+</div></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>Declare the RestTemplate</h4><p>The main class is no longer the default one, it gains a bean.</p><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/CartServiceApplication.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+@SpringBootApplication
+public class CartServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(CartServiceApplication.class, args);
+    }
+
+    /** Resolves http://product-service/... through Eureka. */
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>The entities</h4><p><code>cartId</code> has no <code>@GeneratedValue</code>. It is deliberately the customer's profileId, so a customer has exactly one cart and you never have to look up which.</p><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/entity/Items.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.entity;
+
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Embeddable
+public class Items {
+
+    private int productId;
+    private String productName;
+    private double price;
+    private int quantity;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/entity/Cart.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Cart {
+
+    /** Not generated: the cart id IS the customer&#x27;s profile id. */
+    @Id
+    private int cartId;
+
+    private double totalPrice;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = &quot;cart_items&quot;, joinColumns = @JoinColumn(name = &quot;cart_id&quot;))
+    private List&lt;Items&gt; items = new ArrayList&lt;&gt;();
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">4</div>
+  <div class="step-body"><h4>The DTOs</h4><p><code>ProductPriceDto</code> is a small but real idea: cart-service reads only the three fields it needs from product-service's response. <code>@JsonIgnoreProperties(ignoreUnknown = true)</code> means product-service can add fields tomorrow without breaking this service.</p><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/dto/ItemsDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ItemsDto {
+
+    /** Filled in from product-service. */
+    private int productId;
+
+    private String productName;
+
+    /** Filled in from product-service; whatever the caller sends is ignored. */
+    private double price;
+
+    private int quantity;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/dto/CartDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CartDto {
+
+    private int cartId;
+    private double totalPrice;
+    private List&lt;ItemsDto&gt; items = new ArrayList&lt;&gt;();
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/dto/ProductPriceDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
+/** Just the bits of product-service&#x27;s response this service cares about. */
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ProductPriceDto {
+
+    private int productId;
+    private String productName;
+    private double price;
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">5</div>
+  <div class="step-body"><h4>The repository</h4><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/repository/CartRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.repository;
+
+import com.eshoppingzone.cart.entity.Cart;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CartRepository extends JpaRepository&lt;Cart, Integer&gt; {
+
+    Cart findByCartId(int cartId);
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">6</div>
+  <div class="step-body"><h4>The service</h4><p>The cross-service call is <code>lookUp(...)</code> at the bottom. Note that a failure there becomes a clean <b>400 no such product</b> rather than a stack trace leaking out of the API.</p><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/service/CartService.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.service;
+
+import com.eshoppingzone.cart.dto.CartDto;
+
+import java.util.List;
+
+public interface CartService {
+
+    List&lt;CartDto&gt; getallcarts();
+
+    CartDto getcartById(int cartId);
+
+    CartDto addCart(CartDto cart);
+
+    CartDto updateCart(CartDto cart);
+
+    double cartTotal(CartDto cart);
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/service/CartServiceImpl.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.service;
+
+import com.eshoppingzone.cart.dto.CartDto;
+import com.eshoppingzone.cart.dto.ItemsDto;
+import com.eshoppingzone.cart.dto.ProductPriceDto;
+import com.eshoppingzone.cart.entity.Cart;
+import com.eshoppingzone.cart.entity.Items;
+import com.eshoppingzone.cart.repository.CartRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+public class CartServiceImpl implements CartService {
+
+    private final CartRepository cartRepository;
+    private final RestTemplate restTemplate;
+
+    public CartServiceImpl(CartRepository cartRepository, RestTemplate restTemplate) {
+        this.cartRepository = cartRepository;
+        this.restTemplate = restTemplate;
+    }
+
+    @Override
+    public List&lt;CartDto&gt; getallcarts() {
+        return cartRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public CartDto getcartById(int cartId) {
+        Cart cart = cartRepository.findByCartId(cartId);
+        if (cart == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no cart &quot; + cartId);
+        }
+        return toDto(cart);
+    }
+
+    @Override
+    public CartDto addCart(CartDto cart) {
+        if (cartRepository.existsById(cart.getCartId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;cart &quot; + cart.getCartId() + &quot; already exists&quot;);
+        }
+        return save(cart);
+    }
+
+    @Override
+    public CartDto updateCart(CartDto cart) {
+        if (!cartRepository.existsById(cart.getCartId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no cart &quot; + cart.getCartId());
+        }
+        return save(cart);
+    }
+
+    @Override
+    public double cartTotal(CartDto cart) {
+        return cart.getItems().stream().mapToDouble(i -&gt; i.getPrice() * i.getQuantity()).sum();
+    }
+
+    /** Prices always come from product-service, never from the caller. */
+    private CartDto save(CartDto dto) {
+        Cart cart = new Cart();
+        cart.setCartId(dto.getCartId());
+        for (ItemsDto item : dto.getItems()) {
+            if (item.getQuantity() &lt; 1) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        &quot;quantity must be at least 1 for &quot; + item.getProductName());
+            }
+            ProductPriceDto product = lookUp(item.getProductName());
+            item.setProductId(product.getProductId());
+            item.setPrice(product.getPrice());
+            cart.getItems().add(new Items(product.getProductId(), product.getProductName(), product.getPrice(),
+                    item.getQuantity()));
+        }
+        cart.setTotalPrice(cartTotal(dto));
+        return toDto(cartRepository.save(cart));
+    }
+
+    private ProductPriceDto lookUp(String productName) {
+        ProductPriceDto product;
+        try {
+            product = restTemplate.getForObject(&quot;http://product-service/products/name/{name}&quot;,
+                    ProductPriceDto.class, productName);
+        } catch (RestClientException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;no such product: &quot; + productName, e);
+        }
+        if (product == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;no such product: &quot; + productName);
+        }
+        return product;
+    }
+
+    private CartDto toDto(Cart cart) {
+        CartDto dto = new CartDto();
+        dto.setCartId(cart.getCartId());
+        dto.setTotalPrice(cart.getTotalPrice());
+        dto.setItems(cart.getItems().stream()
+                .map(i -&gt; new ItemsDto(i.getProductId(), i.getProductName(), i.getPrice(), i.getQuantity()))
+                .toList());
+        return dto;
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">7</div>
+  <div class="step-body"><h4>The endpoints</h4><p>There is no add-one-item and no remove-one-item endpoint. <b>PUT /carts</b> takes the full list the cart should end up holding, which covers adding, removing and changing quantity with one method.</p><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/java/com/eshoppingzone/cart/resource/CartResource.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.cart.resource;
+
+import com.eshoppingzone.cart.dto.CartDto;
+import com.eshoppingzone.cart.service.CartService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/carts&quot;)
+public class CartResource {
+
+    private final CartService service;
+
+    public CartResource(CartService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;CartDto&gt;&gt; getAllCarts() {
+        return ResponseEntity.ok(service.getallcarts());
+    }
+
+    /** Opens an empty cart; the cart id is the customer&#x27;s profile id. */
+    @PostMapping(&quot;/{cartId}&quot;)
+    public ResponseEntity&lt;CartDto&gt; addCart(@PathVariable int cartId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.addCart(new CartDto(cartId, 0, new ArrayList&lt;&gt;())));
+    }
+
+    @GetMapping(&quot;/{cartId}&quot;)
+    public ResponseEntity&lt;CartDto&gt; getCart(@PathVariable int cartId) {
+        return ResponseEntity.ok(service.getcartById(cartId));
+    }
+
+    /** Add or remove products by sending the full item list the cart should hold. */
+    @PutMapping
+    public ResponseEntity&lt;CartDto&gt; updateCart(@RequestBody CartDto cart) {
+        return ResponseEntity.ok(service.updateCart(cart));
+    }
+
+    @GetMapping(&quot;/{cartId}/total&quot;)
+    public ResponseEntity&lt;Double&gt; cartTotal(@PathVariable int cartId) {
+        return ResponseEntity.ok(service.cartTotal(service.getcartById(cartId)));
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">8</div>
+  <div class="step-body"><h4>Configure it</h4><figure class="file">
+  <figcaption><span class="path">cart-service/src/main/resources/application.yml</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-yaml">server:
+  port: 9083
+spring:
+  application:
+    name: cart-service
+  datasource:
+    url: jdbc:h2:file:./data/cartdb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka</code></pre>
+</figure></div>
+</div>
+
+<div class="check">
+  <h4><span class="check-tag">Checkpoint</span>The cart prices itself</h4>
+  <p><b>product-service and discovery-server must both be running.</b>
+On <a href="http://localhost:9083/swagger-ui.html">Swagger 9083</a>:</p>
+<ol>
+  <li><b>POST /carts/1</b> opens an empty cart</li>
+  <li><b>PUT /carts</b> with the body below. Note there is <b>no price in the request</b></li>
+</ol><figure class="file">
+  <figcaption><span class="path">Swagger request body</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-json">{
+  &quot;cartId&quot;: 1,
+  &quot;items&quot;: [
+    { &quot;productName&quot;: &quot;Kindle Paperwhite&quot;, &quot;quantity&quot;: 1 }
+  ]
+}</code></pre>
+</figure><p>The response comes back with <b>price 12999</b> and a matching <b>totalPrice</b>, fetched live from
+product-service. Then try a <code>productName</code> that does not exist: you should get <b>400</b>, not a crash.</p>
+<p>Try sending <code>"price": 1</code> in the request as well. It will be ignored, and that is the point.</p>
+</div>
+
+<div class="warn"><b>If this step fails with a connection error,</b> product-service is either not running or has not registered yet. Check <a href='http://localhost:8761'>the Eureka dashboard</a>: both services must be listed before a cross-service call can work.</div>
+
+</section><section id="phase-6" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">6</div>
+    <div>
+      <h2>order-service</h2>
+      <p class="lede">Checkout, both ways. The hardest and most interesting service.</p>
+    </div>
+  </header>
+  
+<p>This service turns a cart into orders, and it can take the money. Three decisions inside it are worth
+your attention, because they are the difference between a demo and something you would defend in a review.</p>
+
+<p><b>One order row per cart line.</b> An <code>Orders</code> row holds one product and one quantity, so a cart
+with three products becomes three orders that share a date and an address. That is why both checkout methods
+return a list.</p>
+
+<p><b>A failed payment must leave nothing behind.</b> <code>onlinePayment</code> writes the orders first (a
+payment needs a real order id to reference), then debits the wallet. Both happen inside one
+<code>@Transactional</code> method, so when the wallet refuses, the exception rolls the orders back and the
+customer is left with neither an order nor a charge.</p>
+
+<p><b>It keeps its own copy of Address and Product.</b> Order-service does not reach into another service's
+database, it stores what it needs. An invoice has to still be correct in five years even if the product is
+delisted and the price changes.</p>
+
+<div class="step">
+  <div class="step-n">1</div>
+  <div class="step-body"><h4>Create the project</h4><div class="wizard">
+  <table><tbody><tr><td>Service URL</td><td><code>https://start.spring.io</code></td></tr><tr><td>Type</td><td><code>Maven</code></td></tr><tr><td>Packaging</td><td><code>Jar</code></td></tr><tr><td>Java Version</td><td><code>17</code></td></tr><tr><td>Language</td><td><code>Java</code></td></tr><tr><td>Group</td><td><code>com.eshoppingzone</code></td></tr><tr><td>Spring Boot Version</td><td><code>3.3.4</code></td></tr><tr><td>Name / Artifact</td><td><code>order-service</code></td></tr><tr class="hi"><td>Package</td><td><code>com.eshoppingzone.order</code></td></tr></tbody></table>
+  <div class="deps"><h5>Dependencies to tick</h5><ul><li><code>Spring Web</code></li><li><code>Spring Data JPA</code></li><li><code>H2 Database</code></li><li><code>Eureka Discovery Client</code></li><li><code>Lombok</code></li></ul></div>
+</div></div>
+</div>
+
+<div class="step">
+  <div class="step-n">2</div>
+  <div class="step-body"><h4>Declare the RestTemplate</h4><p>Same bean as cart-service, this one calls the wallet.</p><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/OrderServiceApplication.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+@SpringBootApplication
+public class OrderServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(OrderServiceApplication.class, args);
+    }
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">3</div>
+  <div class="step-body"><h4>The entities</h4><p><code>Product</code> here is two fields, not the catalog's fifteen: an order needs to say <i>which product</i>, not everything about it.</p><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/product/Product.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.product;
+
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Embeddable
+public class Product {
+
+    private String productId;
+    private String productName;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/address/Address.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.address;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Address {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer addressId;
+
+    private Integer customerId;
+    private String fullName;
+    private String mobileNumber;
+    private Integer flatNumber;
+    private String city;
+    private Integer pincode;
+    private String state;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/orders/Orders.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.orders;
+
+import com.eshoppingzone.order.address.Address;
+import com.eshoppingzone.order.product.Product;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Orders {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int orderId;
+
+    private LocalDate orderDate;
+    private Integer customerId;
+    private double ammountPaid;
+    private String modeOfPayment;
+    private String orderStatus;
+    private int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;address_id&quot;)
+    private Address address;
+
+    @Embedded
+    private Product product;
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">4</div>
+  <div class="step-body"><h4>The DTOs</h4><p><code>CartDto</code> and <code>ItemsDto</code> here are order-service's own copy of the shape cart-service posts at checkout. Two services agreeing on a JSON shape is the contract; sharing a class would make them one service wearing two hats.</p><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/dto/ItemsDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/** One line of the cart posted at checkout. */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ItemsDto {
+
+    private int productId;
+    private String productName;
+    private double price;
+    private int quantity;
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/dto/CartDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** The cart posted at checkout; cartId is the customer&#x27;s profile id. */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CartDto {
+
+    private int cartId;
+    private double totalPrice;
+    private List&lt;ItemsDto&gt; items = new ArrayList&lt;&gt;();
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/dto/OrdersDto.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.dto;
+
+import com.eshoppingzone.order.address.Address;
+import com.eshoppingzone.order.product.Product;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrdersDto {
+
+    private int orderId;
+    private LocalDate orderDate;
+    private Integer customerId;
+    private double ammountPaid;
+    private String modeOfPayment;
+    private String orderStatus;
+    private int quantity;
+    private Address address;
+    private Product product;
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">5</div>
+  <div class="step-body"><h4>The repositories</h4><p><code>findFirstByOrderByOrderIdDesc</code> is a mouthful that means <i>the newest order</i>: find first, order by orderId, descending.</p><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/repository/OrderRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.repository;
+
+import com.eshoppingzone.order.orders.Orders;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface OrderRepository extends JpaRepository&lt;Orders, Integer&gt; {
+
+    List&lt;Orders&gt; findByCustomerId(Integer customerId);
+
+    Orders findFirstByOrderByOrderIdDesc();
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/repository/AddressRepository.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.repository;
+
+import com.eshoppingzone.order.address.Address;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface AddressRepository extends JpaRepository&lt;Address, Integer&gt; {
+
+    List&lt;Address&gt; findByCustomerId(int customerId);
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">6</div>
+  <div class="step-body"><h4>The service</h4><p>Read <code>onlinePayment</code> and <code>payFromWallet</code> together. That pair is the whole rollback story.</p><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/service/OrderService.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.service;
+
+import com.eshoppingzone.order.address.Address;
+import com.eshoppingzone.order.dto.CartDto;
+import com.eshoppingzone.order.dto.OrdersDto;
+
+import java.util.List;
+
+public interface OrderService {
+
+    List&lt;OrdersDto&gt; getAllOrders();
+
+    List&lt;OrdersDto&gt; placeOrder(CartDto cart);
+
+    List&lt;OrdersDto&gt; onlinePayment(CartDto cart);
+
+    OrdersDto changeStatus(String status, int orderId);
+
+    void deleteOrder(int orderId);
+
+    List&lt;OrdersDto&gt; getOrderByCustomerId(int customerId);
+
+    OrdersDto getOrderById(int orderId);
+
+    OrdersDto findMAXByOrderId();
+
+    Address storeAddress(Address address);
+
+    List&lt;Address&gt; getAddressByCustomerId(int customerId);
+
+    List&lt;Address&gt; getAllAddress();
+}</code></pre>
+</figure><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/service/OrderServiceImpl.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.service;
+
+import com.eshoppingzone.order.address.Address;
+import com.eshoppingzone.order.dto.CartDto;
+import com.eshoppingzone.order.dto.ItemsDto;
+import com.eshoppingzone.order.dto.OrdersDto;
+import com.eshoppingzone.order.orders.Orders;
+import com.eshoppingzone.order.product.Product;
+import com.eshoppingzone.order.repository.AddressRepository;
+import com.eshoppingzone.order.repository.OrderRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    public static final String CASH_ON_DELIVERY = &quot;Cash on delivery&quot;;
+    public static final String WALLET = &quot;Wallet&quot;;
+    public static final String PLACED = &quot;Order Placed&quot;;
+
+    private final OrderRepository orderRepository;
+    private final AddressRepository addressRepository;
+    private final RestTemplate restTemplate;
+
+    public OrderServiceImpl(OrderRepository orderRepository, AddressRepository addressRepository,
+                            RestTemplate restTemplate) {
+        this.orderRepository = orderRepository;
+        this.addressRepository = addressRepository;
+        this.restTemplate = restTemplate;
+    }
+
+    @Override
+    public List&lt;OrdersDto&gt; getAllOrders() {
+        return orderRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    @Transactional
+    public List&lt;OrdersDto&gt; placeOrder(CartDto cart) {
+        return createOrders(cart, CASH_ON_DELIVERY);
+    }
+
+    /**
+     * Wallet checkout. The orders are written first so the payment can carry a real order id, then the
+     * wallet is debited; if the debit fails this transaction rolls back and no order survives.
+     */
+    @Override
+    @Transactional
+    public List&lt;OrdersDto&gt; onlinePayment(CartDto cart) {
+        List&lt;OrdersDto&gt; orders = createOrders(cart, WALLET);
+        double total = orders.stream().mapToDouble(OrdersDto::getAmmountPaid).sum();
+        payFromWallet(cart.getCartId(), total, orders.get(0).getOrderId());
+        return orders;
+    }
+
+    private List&lt;OrdersDto&gt; createOrders(CartDto cart, String modeOfPayment) {
+        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;cart is empty&quot;);
+        }
+        Address address = latestAddressOf(cart.getCartId());
+        List&lt;OrdersDto&gt; placed = new ArrayList&lt;&gt;();
+        for (ItemsDto item : cart.getItems()) {
+            if (item.getQuantity() &lt; 1) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        &quot;quantity must be at least 1 for &quot; + item.getProductName());
+            }
+            Orders order = new Orders();
+            order.setOrderDate(LocalDate.now());
+            order.setCustomerId(cart.getCartId());
+            order.setAmmountPaid(item.getPrice() * item.getQuantity());
+            order.setModeOfPayment(modeOfPayment);
+            order.setOrderStatus(PLACED);
+            order.setQuantity(item.getQuantity());
+            order.setAddress(address);
+            order.setProduct(new Product(String.valueOf(item.getProductId()), item.getProductName()));
+            placed.add(toDto(orderRepository.save(order)));
+        }
+        return placed;
+    }
+
+    private Address latestAddressOf(int customerId) {
+        List&lt;Address&gt; addresses = addressRepository.findByCustomerId(customerId);
+        if (addresses.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    &quot;no delivery address stored for customer &quot; + customerId);
+        }
+        return addresses.get(addresses.size() - 1);
+    }
+
+    private void payFromWallet(int customerId, double amount, int orderId) {
+        try {
+            restTemplate.put(&quot;http://wallet-service/wallets/{id}/pay?amount={amount}&amp;orderId={orderId}&quot;,
+                    null, customerId, amount, orderId);
+        } catch (RestClientResponseException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    &quot;wallet payment failed: &quot; + e.getResponseBodyAsString(), e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, &quot;wallet-service unreachable&quot;, e);
+        }
+    }
+
+    @Override
+    public OrdersDto changeStatus(String status, int orderId) {
+        Orders order = findOrThrow(orderId);
+        order.setOrderStatus(status);
+        return toDto(orderRepository.save(order));
+    }
+
+    @Override
+    public void deleteOrder(int orderId) {
+        orderRepository.delete(findOrThrow(orderId));
+    }
+
+    @Override
+    public List&lt;OrdersDto&gt; getOrderByCustomerId(int customerId) {
+        return orderRepository.findByCustomerId(customerId).stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public OrdersDto getOrderById(int orderId) {
+        return toDto(findOrThrow(orderId));
+    }
+
+    @Override
+    public OrdersDto findMAXByOrderId() {
+        Orders order = orderRepository.findFirstByOrderByOrderIdDesc();
+        if (order == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no orders yet&quot;);
+        }
+        return toDto(order);
+    }
+
+    @Override
+    public Address storeAddress(Address address) {
+        if (address.getCustomerId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;customerId is required&quot;);
+        }
+        address.setAddressId(null);
+        return addressRepository.save(address);
+    }
+
+    @Override
+    public List&lt;Address&gt; getAddressByCustomerId(int customerId) {
+        return addressRepository.findByCustomerId(customerId);
+    }
+
+    @Override
+    public List&lt;Address&gt; getAllAddress() {
+        return addressRepository.findAll();
+    }
+
+    private Orders findOrThrow(int orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;no order &quot; + orderId));
+    }
+
+    private OrdersDto toDto(Orders order) {
+        OrdersDto dto = new OrdersDto();
+        BeanUtils.copyProperties(order, dto);
+        return dto;
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">7</div>
+  <div class="step-body"><h4>The endpoints</h4><figure class="file">
+  <figcaption><span class="path">order-service/src/main/java/com/eshoppingzone/order/resource/OrderResource.java</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-java">package com.eshoppingzone.order.resource;
+
+import com.eshoppingzone.order.address.Address;
+import com.eshoppingzone.order.dto.CartDto;
+import com.eshoppingzone.order.dto.OrdersDto;
+import com.eshoppingzone.order.service.OrderService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/orders&quot;)
+public class OrderResource {
+
+    private final OrderService orderService;
+
+    public OrderResource(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;OrdersDto&gt;&gt; getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    /** Cash on delivery checkout. */
+    @PostMapping(&quot;/place&quot;)
+    public ResponseEntity&lt;List&lt;OrdersDto&gt;&gt; placeOrder(@RequestBody CartDto cart) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.placeOrder(cart));
+    }
+
+    /** Wallet checkout: debits wallet-service, rolls the orders back if the debit fails. */
+    @PostMapping(&quot;/onlinePayment&quot;)
+    public ResponseEntity&lt;List&lt;OrdersDto&gt;&gt; onlinePayment(@RequestBody CartDto cart) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.onlinePayment(cart));
+    }
+
+    @GetMapping(&quot;/{orderId}&quot;)
+    public ResponseEntity&lt;OrdersDto&gt; getOrderById(@PathVariable int orderId) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
+    @GetMapping(&quot;/customer/{customerId}&quot;)
+    public ResponseEntity&lt;List&lt;OrdersDto&gt;&gt; getOrderByCustomerId(@PathVariable int customerId) {
+        return ResponseEntity.ok(orderService.getOrderByCustomerId(customerId));
+    }
+
+    @GetMapping(&quot;/latest&quot;)
+    public ResponseEntity&lt;OrdersDto&gt; findMAXByOrderId() {
+        return ResponseEntity.ok(orderService.findMAXByOrderId());
+    }
+
+    @PutMapping(&quot;/{orderId}/status&quot;)
+    public ResponseEntity&lt;OrdersDto&gt; changeOrderStatus(@PathVariable int orderId, @RequestParam String status) {
+        return ResponseEntity.ok(orderService.changeStatus(status, orderId));
+    }
+
+    @DeleteMapping(&quot;/{orderId}&quot;)
+    public ResponseEntity&lt;String&gt; deleteOrder(@PathVariable int orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.ok(&quot;order &quot; + orderId + &quot; deleted&quot;);
+    }
+
+    @PostMapping(&quot;/address&quot;)
+    public ResponseEntity&lt;Address&gt; storeAddress(@RequestBody Address address) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.storeAddress(address));
+    }
+
+    @GetMapping(&quot;/address&quot;)
+    public ResponseEntity&lt;List&lt;Address&gt;&gt; getAllAddress() {
+        return ResponseEntity.ok(orderService.getAllAddress());
+    }
+
+    @GetMapping(&quot;/address/{customerId}&quot;)
+    public ResponseEntity&lt;List&lt;Address&gt;&gt; getAddressByCustomerId(@PathVariable int customerId) {
+        return ResponseEntity.ok(orderService.getAddressByCustomerId(customerId));
+    }
+}</code></pre>
+</figure></div>
+</div>
+
+<div class="step">
+  <div class="step-n">8</div>
+  <div class="step-body"><h4>Configure it</h4><figure class="file">
+  <figcaption><span class="path">order-service/src/main/resources/application.yml</span><button class="copy" type="button">Copy</button></figcaption>
+  
+  <pre><code class="language-yaml">server:
+  port: 9084
+spring:
+  application: 
+    name: order-service
+  datasource:
+    url: jdbc:h2:file:./data/orderdb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka</code></pre>
+</figure></div>
+</div>
+
+<div class="check">
+  <h4><span class="check-tag">Checkpoint</span>The whole system works</h4>
+  <p><b>All six applications running.</b> Use the Boot Dashboard to confirm. Then, on
+<a href="http://localhost:9084/swagger-ui.html">Swagger 9084</a>:</p>
+<ol>
+  <li><b>POST /orders/address</b> stores a delivery address for customer 1. Checkout fails without one, on purpose.</li>
+  <li><b>GET /carts/1</b> on port 9083, copy the whole response</li>
+  <li><b>POST /orders/place</b> takes it as the body. Cash on delivery. You get an order back.</li>
+  <li><b>POST /orders/onlinePayment</b> takes the same body. Check the wallet balance on 9085: it dropped by the order total,
+      and <b>GET /wallets/1/statements</b> shows a Withdraw carrying that order id.</li>
+  <li><b>GET /orders/customer/1</b> returns both orders, one marked <i>Cash on delivery</i> and one <i>Wallet</i>.</li>
+  <li><b>PUT /orders/1/status?status=Shipped</b> is the merchant's side.</li>
+</ol>
+<p class="final-check">Then the test that proves the design. Drain the wallet with
+<b>PUT /wallets/1/pay</b> until almost nothing is left, count your orders with <b>GET /orders</b>, and run
+<b>POST /orders/onlinePayment</b> again. You should get <b>400</b>, and <b>GET /orders</b> must return the
+<i>same count as before</i>. If a phantom order survived a failed payment, the <code>@Transactional</code> on
+<code>onlinePayment</code> is missing or the exception is being swallowed.</p>
+</div>
+
+</section><section id="wrap" class="phase">
+  <header class="phase-head">
+    <div class="phase-n">7</div>
+    <div>
+      <h2>When it is all running</h2>
+      <p class="lede">What to check, what breaks, and what is deliberately missing.</p>
+    </div>
+  </header>
+  
+<h4>Start them in this order</h4>
+<p><code>discovery-server</code> first, always. Then the other five in any order. In the Boot Dashboard you can
+select all five and start them together once Eureka is up.</p>
+
+<h4>The four errors you will actually hit</h4>
+<div class="errors">
+  <div><b>Port 9082 was already in use</b><span>Something else has the port, or a previous run never died. Stop it in the Boot Dashboard, or change <code>server.port</code> in that service's <code>application.yml</code>.</span></div>
+  <div><b>getPrice() is undefined</b><span>Lombok is not installed into Eclipse. Phase 0, step 3, and restart Eclipse afterwards.</span></div>
+  <div><b>Connection refused / 503 on a cart or checkout call</b><span>The service being called is not running, or has not registered yet. Check <a href="http://localhost:8761">the dashboard</a>; registration takes about 30 seconds.</span></div>
+  <div><b>Table not found, or old data reappearing</b><span>H2 is writing to a file under the service's <code>data/</code> folder. Delete that folder and restart for a clean database.</span></div>
+</div>
+
+<h4>Look inside the database</h4>
+<p>Each service exposes an H2 console at <a href="http://localhost:9082/h2-console">localhost:9082/h2-console</a> for
+products. JDBC URL <code>jdbc:h2:file:./data/productdb</code>, user <code>sa</code>, no password. Useful when an
+endpoint returns something you did not expect and you want to see what was actually stored.</p>
+
+<h4>What this build deliberately does not do</h4>
+<p>Worth knowing before someone asks you in a review:</p>
+<ul class="gaps">
+  <li><b>The cart is not emptied after checkout</b>, so posting the same cart twice places the order twice.</li>
+  <li><b>There is no authentication</b>, so any caller can act as any customer id. Real systems put a token check in front of every endpoint.</li>
+  <li><b>Cancelling an order does not refund the wallet</b>, the status changes and the money stays spent.</li>
+  <li><b>Ratings and reviews can be stored but there is no endpoint to add a single review.</b></li>
+</ul>
+<p>Each one is a good next exercise, and each is a real conversation about where the responsibility belongs:
+should order-service reach over and empty the cart, or should cart-service listen for an order being placed?</p>
+
+</section>
+</main>
+
+<footer>
+  Every code block on this page is taken verbatim from a build that runs: all six services start, register with
+  Eureka, and pass an end-to-end test from sign-up through wallet checkout, including the rolled-back payment.
+</footer>
+
+<script>
+  hljs.configure({ ignoreUnescapedHTML: true });
+  hljs.highlightAll();
+
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var code = btn.closest(".file").querySelector("code").innerText;
+      navigator.clipboard.writeText(code).then(function () {
+        btn.textContent = "Copied";
+        btn.classList.add("done");
+        setTimeout(function () { btn.textContent = "Copy"; btn.classList.remove("done"); }, 1600);
+      });
+    });
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav a"));
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function (l) {
+        l.classList.toggle("on", l.getAttribute("href") === "#" + e.target.id);
+      });
+    });
+  }, { rootMargin: "-15% 0px -70% 0px" });
+  document.querySelectorAll(".phase").forEach(function (s) { obs.observe(s); });
+</script>
+</body>
+</html>

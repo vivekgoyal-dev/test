@@ -1,0 +1,628 @@
+{
+  "info": {
+    "name": "EShoppingZone",
+    "description": "Walk the requests top to bottom: they follow one customer from sign-up to a paid order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1 Profile",
+      "item": [
+        {
+          "name": "register customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9081/profiles/customer"
+            },
+            "description": "The profileId in the response is the customer id used as cartId and walletId everywhere else.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Asha Rao\",\n  \"emailId\": \"asha@example.com\",\n  \"mobileNumber\": 9812345670,\n  \"gender\": \"F\",\n  \"dateOfBirth\": \"1996-02-20\",\n  \"password\": \"secret\",\n  \"addresses\": [\n    {\n      \"houseNumber\": 12,\n      \"streetName\": \"MG Road\",\n      \"colonyName\": \"Indiranagar\",\n      \"city\": \"Bengaluru\",\n      \"state\": \"Karnataka\",\n      \"pincode\": 560038\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "register merchant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9081/profiles/merchant"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nova Traders\",\n  \"emailId\": \"sales@nova.example\",\n  \"mobileNumber\": 9812345671\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "all profiles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9081/profiles"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9081/profiles/1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by phone",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9081/profiles/phone/9812345670"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9081/profiles/username/Asha Rao"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9081/profiles"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profileId\": 1,\n  \"fullName\": \"Asha Rao\",\n  \"emailId\": \"asha.rao@example.com\",\n  \"mobileNumber\": 9812345670,\n  \"about\": \"Reads a lot\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9081/profiles/1"
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 Product",
+      "item": [
+        {
+          "name": "add product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9082/products"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Kindle Paperwhite\",\n  \"productType\": \"Electronics\",\n  \"category\": \"electronics\",\n  \"price\": 12999,\n  \"description\": \"6.8 inch e-reader\",\n  \"image\": [\n    \"kindle.jpg\"\n  ],\n  \"specification\": {\n    \"storage\": \"16GB\",\n    \"screen\": \"6.8 inch\"\n  },\n  \"rating\": {\n    \"1\": 4.5\n  },\n  \"review\": {\n    \"1\": \"Battery lasts weeks\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "add second product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9082/products"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"Cotton T-Shirt\",\n  \"productType\": \"Apparel\",\n  \"category\": \"apparel\",\n  \"price\": 799,\n  \"description\": \"Plain crew neck\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "all products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9082/products"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9082/products/1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9082/products/name/Kindle Paperwhite"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9082/products/category/electronics"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "by type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9082/products/type/Apparel"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9082/products"
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 1,\n  \"productName\": \"Kindle Paperwhite\",\n  \"productType\": \"Electronics\",\n  \"category\": \"electronics\",\n  \"price\": 11999,\n  \"description\": \"6.8 inch e-reader, price drop\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9082/products/2"
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 Cart",
+      "item": [
+        {
+          "name": "open cart",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9083/carts/1"
+            },
+            "description": "Path variable is the customer's profileId."
+          }
+        },
+        {
+          "name": "add items",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9083/carts"
+            },
+            "description": "Only productName and quantity matter: the price comes from product-service.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": 1,\n  \"items\": [\n    {\n      \"productName\": \"Kindle Paperwhite\",\n      \"quantity\": 1\n    },\n    {\n      \"productName\": \"Cotton T-Shirt\",\n      \"quantity\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "remove an item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9083/carts"
+            },
+            "description": "Send the list the cart should end up with.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": 1,\n  \"items\": [\n    {\n      \"productName\": \"Kindle Paperwhite\",\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "get cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9083/carts/1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "all carts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9083/carts"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "cart total",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9083/carts/1/total"
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 Order",
+      "item": [
+        {
+          "name": "store address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9084/orders/address"
+            },
+            "description": "Checkout uses the most recent address stored for the customer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"fullName\": \"Asha Rao\",\n  \"mobileNumber\": \"9812345670\",\n  \"flatNumber\": 12,\n  \"city\": \"Bengaluru\",\n  \"pincode\": 560038,\n  \"state\": \"Karnataka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "addresses of a customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9084/orders/address/1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "checkout - cash on delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9084/orders/place"
+            },
+            "description": "Paste the body from GET /carts/1. One order row per cart line.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": 1,\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"productName\": \"Kindle Paperwhite\",\n      \"price\": 12999,\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "checkout - wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9084/orders/onlinePayment"
+            },
+            "description": "Debits wallet 1. If the balance is short you get 400 and no order is created.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": 1,\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"productName\": \"Kindle Paperwhite\",\n      \"price\": 12999,\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "orders of a customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9084/orders/customer/1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "all orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9084/orders"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "latest order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9084/orders/latest"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "change status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9084/orders/1/status?status=Shipped"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "delete order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9084/orders/1"
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 Wallet",
+      "item": [
+        {
+          "name": "open wallet",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/1"
+            },
+            "description": "Path variable is the customer's profileId."
+          }
+        },
+        {
+          "name": "top up",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/1/add?amount=20000&remarks=Salary transfer"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "pay (normally called by order-service)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/1/pay?amount=500&orderId=1"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "statements of a wallet",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/1/statements"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "all statements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/statements"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "all wallets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets"
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "delete wallet",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9085/wallets/1"
+            },
+            "description": ""
+          }
+        }
+      ]
+    }
+  ]
+}
