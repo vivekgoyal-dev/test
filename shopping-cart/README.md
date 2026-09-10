@@ -4,8 +4,13 @@ Seven Spring Boot applications behind an API gateway: three roles, JWT login, Fe
 service-to-service calls, validation on every request body, and AOP logging in each service.
 Backend only, driven from Postman or Swagger. No frontend.
 
-**Full documentation with architecture diagrams, real request and response examples and
-step-by-step setup: [`DOCUMENTATION.html`](DOCUMENTATION.html)** (open it in a browser).
+**New to Java or Spring Boot? Start with [`BEGINNERS-GUIDE.html`](BEGINNERS-GUIDE.html)**, which
+explains every term from scratch in plain English.
+
+**Already comfortable? [`DOCUMENTATION.html`](DOCUMENTATION.html)** has the architecture diagrams,
+every endpoint with real request and response examples, and the setup steps.
+
+Both open in a browser.
 
 ## The projects
 

@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopping Cart Explained Simply</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Karla:ital,wght@0,400;0,600;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
+<style>
+:root {
+  --ground: #f5f4f8;
+  --surface: #ffffff;
+  --surface-2: #faf9fc;
+  --ink: #1b1720;
+  --ink-soft: #55505f;
+  --ink-faint: #857f92;
+  --line: #e0dde8;
+  --accent: #6a4a8f;
+  --accent-ink: #5c3f7d;
+  --accent-wash: #eeeaf5;
+  --amber: #8a6112;
+  --amber-wash: #faf2e2;
+  --green: #2c6b4f;
+  --green-wash: #e6f2eb;
+  --red: #97363b;
+  --red-wash: #f9eaeb;
+  --code-bg: #221c2b;
+  --code-ink: #e6e2ee;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #131017;
+    --surface: #1b1722;
+    --surface-2: #211c29;
+    --ink: #ece9f2;
+    --ink-soft: #a9a2b8;
+    --ink-faint: #837c93;
+    --line: #2e2839;
+    --accent: #b399db;
+    --accent-ink: #c3aee6;
+    --accent-wash: #241d33;
+    --amber: #d5a44f;
+    --amber-wash: #2b2213;
+    --green: #6cc79a;
+    --green-wash: #13291f;
+    --red: #d98287;
+    --red-wash: #2b1618;
+    --code-bg: #100d15;
+    --code-ink: #e6e2ee;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #131017;
+  --surface: #1b1722;
+  --surface-2: #211c29;
+  --ink: #ece9f2;
+  --ink-soft: #a9a2b8;
+  --ink-faint: #837c93;
+  --line: #2e2839;
+  --accent: #b399db;
+  --accent-ink: #c3aee6;
+  --accent-wash: #241d33;
+  --amber: #d5a44f;
+  --amber-wash: #2b2213;
+  --green: #6cc79a;
+  --green-wash: #13291f;
+  --red: #d98287;
+  --red-wash: #2b1618;
+  --code-bg: #100d15;
+  --code-ink: #e6e2ee;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: Karla, ui-sans-serif, system-ui, sans-serif;
+  font-size: 17.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }
+a { color: var(--accent-ink); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+code { font-family: "Source Code Pro", ui-monospace, monospace; font-size: 0.85em; }
+p code, li code, td code {
+  background: var(--accent-wash); color: var(--accent-ink);
+  padding: .12em .38em; border-radius: 4px;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 26px; }
+
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); padding: 60px 0 46px; }
+.kicker {
+  font-family: "Source Code Pro", monospace; font-size: 11.5px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 16px;
+}
+h1 { font-size: clamp(2.1rem, 5.5vw, 3.1rem); line-height: 1.08; margin: 0; text-wrap: balance; }
+.standfirst { font-size: 1.15rem; color: var(--ink-soft); margin: 18px 0 0; }
+
+.toc-box {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 22px 26px; margin: 40px 0;
+}
+.toc-box h3 { margin: 0 0 12px; font-size: 1rem; }
+.toc-box ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 30px; }
+.toc-box li { margin-bottom: 5px; font-size: 15px; }
+.toc-box a { text-decoration: none; color: var(--ink-soft); }
+.toc-box a:hover { color: var(--accent-ink); text-decoration: underline; }
+
+main { padding: 10px 0 90px; }
+section { margin-bottom: 56px; scroll-margin-top: 20px; }
+.part {
+  font-family: "Source Code Pro", monospace; font-size: 11.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 6px;
+}
+h2 { font-size: 1.72rem; margin: 0 0 18px; line-height: 1.2; }
+h3 { font-size: 1.16rem; margin: 32px 0 10px; }
+p { margin: 0 0 16px; }
+
+.plain {
+  background: var(--accent-wash); border-radius: 10px; padding: 18px 22px; margin: 22px 0;
+}
+.plain h4 {
+  font-family: "Source Code Pro", monospace; font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 8px; font-weight: 500;
+}
+.plain p:last-child { margin-bottom: 0; }
+
+.note, .warn {
+  border-left: 4px solid var(--amber); background: var(--amber-wash);
+  padding: 14px 20px; border-radius: 0 8px 8px 0; margin: 22px 0; font-size: 16px;
+}
+.note { border-left-color: var(--ink-faint); background: var(--surface-2); color: var(--ink-soft); }
+.note p:last-child, .warn p:last-child { margin-bottom: 0; }
+
+pre {
+  background: var(--code-bg); color: var(--code-ink); border-radius: 8px;
+  padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; margin: 18px 0;
+}
+pre code { color: inherit; background: none; padding: 0; font-size: inherit; }
+
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; display: block; overflow-x: auto; }
+th {
+  text-align: left; font-family: "Source Code Pro", monospace; font-size: 11px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
+  border-bottom: 1px solid var(--line); padding: 8px 14px 8px 0; white-space: nowrap;
+}
+td { padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+
+.cards { display: grid; gap: 12px; margin: 22px 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
+.card h4 { margin: 0 0 5px; font-family: Fraunces, serif; font-size: 1.03rem; font-weight: 600; }
+.card p { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
+
+figure { margin: 26px 0; padding: 22px 18px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+figure svg { display: block; width: 100%; height: auto; color: var(--ink); }
+figcaption { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); }
+
+.steps { counter-reset: s; display: grid; gap: 14px; margin: 24px 0; }
+.stepbox {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 18px 22px; position: relative;
+}
+.stepbox h4 { margin: 0 0 8px; font-family: Fraunces, serif; font-size: 1.06rem; font-weight: 600; }
+.stepbox p { font-size: 16px; }
+.stepbox p:last-child, .stepbox pre:last-child { margin-bottom: 0; }
+
+.gloss { display: grid; gap: 0; margin: 22px 0; }
+.gloss > div { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 168px minmax(0,1fr); gap: 18px; }
+.gloss b { font-family: "Source Code Pro", monospace; font-size: 14px; color: var(--accent-ink); }
+.gloss span { font-size: 16px; color: var(--ink-soft); }
+
+footer { border-top: 1px solid var(--line); padding: 26px 0 60px; color: var(--ink-faint); font-size: 14px; }
+
+@media (max-width: 700px) {
+  .toc-box ol { columns: 1; }
+  .gloss > div { grid-template-columns: 1fr; gap: 3px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <p class="kicker">Start here &#183; no experience needed</p>
+    <h1>Shopping Cart, Explained Simply</h1>
+    <p class="standfirst">What this project is, what every word in it means, and how to run it.
+    Written for someone who has not used Java or Spring Boot before. Nothing is assumed.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="toc-box">
+  <h3>What is in here</h3>
+  <ol>
+    <li><a href="#p1">What we are building</a></li>
+    <li><a href="#p2">Java and Spring Boot</a></li>
+    <li><a href="#p3">Why seven programs</a></li>
+    <li><a href="#p4">How programs talk: APIs</a></li>
+    <li><a href="#p5">JSON, the message format</a></li>
+    <li><a href="#p6">Databases</a></li>
+    <li><a href="#p7">Login and tokens</a></li>
+    <li><a href="#p8">The gateway, Eureka, Feign</a></li>
+    <li><a href="#p9">Inside one service</a></li>
+    <li><a href="#p10">Words you will see in the code</a></li>
+    <li><a href="#p11">Following one real request</a></li>
+    <li><a href="#p12">Running it yourself</a></li>
+    <li><a href="#p13">When something breaks</a></li>
+    <li><a href="#p14">Small dictionary</a></li>
+  </ol>
+</div>
+
+<main>
+
+<section id="p1">
+  <p class="part">Part 1</p>
+  <h2>What we are building</h2>
+
+  <p>Imagine a small online shop. Three kinds of people use it.</p>
+
+  <div class="cards">
+    <div class="card"><h4>A customer</h4><p>Signs up, looks at products, puts things in a basket, and places an order.</p></div>
+    <div class="card"><h4>A shop owner</h4><p>Signs up, adds the products they sell, and marks orders as shipped.</p></div>
+    <div class="card"><h4>An admin</h4><p>That is us. Can look at everything: all users, all products, all orders.</p></div>
+  </div>
+
+  <p>We are building only the <strong>back part</strong> of that shop. There are no screens, no
+  buttons, no colours. There is no website to click on.</p>
+
+  <div class="plain">
+    <h4>In plain words</h4>
+    <p>A website has two halves. The <strong>front</strong> is what you see and click. The
+    <strong>back</strong> is the part that actually remembers things, checks passwords, and does
+    the work. We are building the back half only.</p>
+    <p>So instead of clicking a button, we send instructions using a tool called
+    <strong>Postman</strong>. Think of Postman as a way to talk to the program directly, without a
+    website in the middle.</p>
+  </div>
+
+  <p>That may feel strange at first. But it is completely normal at work: in a real team, one
+  person builds the back half and another builds the screens. They are built separately and joined
+  later.</p>
+</section>
+
+<section id="p2">
+  <p class="part">Part 2</p>
+  <h2>Java and Spring Boot</h2>
+
+  <p><strong>Java</strong> is a programming language. It is the language all our instructions are
+  written in. Like any language, it has its own grammar and its own words.</p>
+
+  <p><strong>Spring</strong> is a very large helper library for Java. Instead of writing everything
+  yourself, Spring has already written the boring, repeated parts, and you use them.</p>
+
+  <p><strong>Spring Boot</strong> is Spring made easy to start. It sets up sensible defaults so you
+  can run a program straight away instead of spending a day on settings.</p>
+
+  <div class="plain">
+    <h4>In plain words</h4>
+    <p>Java is the language. Spring is a big box of ready-made parts. Spring Boot is that box,
+    pre-arranged so you can start quickly.</p>
+    <p>You will write far less code than you expect. Most of the time you are telling Spring
+    <em>what</em> you want, and Spring works out <em>how</em>.</p>
+  </div>
+
+  <h3>What is Maven?</h3>
+
+  <p>Our project uses many of these ready-made parts, and each part is a file that has to be
+  downloaded from the internet. <strong>Maven</strong> is the tool that does this for you.</p>
+
+  <p>Every project folder has a file called <code>pom.xml</code>. That file is a shopping list. It
+  says "I need Spring Boot, I need the MySQL driver, I need Lombok." Maven reads the list,
+  downloads everything, and builds the program.</p>
+
+  <div class="note">
+    <p>This is why the very first build is slow. Maven is downloading hundreds of files. The second
+    time it is fast, because they are already on your computer.</p>
+  </div>
+</section>
+
+<section id="p3">
+  <p class="part">Part 3</p>
+  <h2>Why seven programs instead of one</h2>
+
+  <p>We could have written this shop as one single program. Instead it is <strong>seven separate
+  programs</strong>, each doing one job, all running at the same time.</p>
+
+  <p>Think of a real shop building. There is a billing counter, a stock room, a security guard at
+  the door, and a reception desk. Each has one job. They are separate, but together they are one
+  shop.</p>
+
+  <table>
+    <thead><tr><th>Program</th><th>Its one job</th></tr></thead>
+    <tbody>
+      <tr><td><code>auth-service</code></td><td>Sign up and log in. Keeps passwords.</td></tr>
+      <tr><td><code>profile-service</code></td><td>Remembers a person's name, phone, birthday.</td></tr>
+      <tr><td><code>product-service</code></td><td>The list of things for sale.</td></tr>
+      <tr><td><code>cart-service</code></td><td>What is currently in someone's basket.</td></tr>
+      <tr><td><code>order-service</code></td><td>Orders that have been placed, and their status.</td></tr>
+      <tr><td><code>api-gateway</code></td><td>The security guard at the front door.</td></tr>
+      <tr><td><code>discovery-server</code></td><td>The internal phone directory.</td></tr>
+    </tbody>
+  </table>
+
+  <p>Each one is a separate folder, with its own <code>pom.xml</code>, and each one is started
+  separately. When they are all running, you have seven black windows open on your screen. That is
+  normal and correct.</p>
+
+  <div class="plain">
+    <h4>Why bother?</h4>
+    <p>Because you can change the product list without touching the login code. And if the basket
+    program crashes, people can still log in. In one big program, one mistake stops everything.</p>
+    <p>This style has a name: <strong>microservices</strong>. Micro means small, service means a
+    program that does a job for others. Small programs, each doing one job.</p>
+  </div>
+
+  <div class="warn">
+    <p>The cost is that there are seven of everything: seven folders, seven settings files, seven
+    windows. That is the trade. More pieces to start, but each piece is simple.</p>
+  </div>
+</section>
+
+<section id="p4">
+  <p class="part">Part 4</p>
+  <h2>How programs talk to each other: APIs</h2>
+
+  <p>An <strong>API</strong> is just a list of things a program will do for you if you ask
+  properly. Nothing more mysterious than that.</p>
+
+  <p>You ask by sending a <strong>request</strong> to an <strong>address</strong>, and the program
+  sends back a <strong>response</strong>. Exactly like typing a web address into a browser, except
+  the answer is data instead of a page.</p>
+
+  <p>An address looks like this:</p>
+
+  <pre><code>http://localhost:9090/products
+&#94;              &#94;    &#94;
+|              |    +--- which thing you want
+|              +-------- which door (port number)
++----------------------- this computer</code></pre>
+
+  <p><code>localhost</code> means "this computer, right here". Because everything is running on
+  your own laptop, every address starts that way.</p>
+
+  <h3>The four kinds of request</h3>
+
+  <p>Every request has a <strong>method</strong>, which says what kind of thing you want to do.
+  There are four you will use:</p>
+
+  <table>
+    <thead><tr><th>Method</th><th>Means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>GET</strong></td><td>Show me something</td><td>Show me all products</td></tr>
+      <tr><td><strong>POST</strong></td><td>Create something new</td><td>Add a new product</td></tr>
+      <tr><td><strong>PUT</strong></td><td>Change something</td><td>Change the price</td></tr>
+      <tr><td><strong>DELETE</strong></td><td>Remove something</td><td>Delete a product</td></tr>
+    </tbody>
+  </table>
+
+  <p>So <code>GET /products</code> means "show me the products", and
+  <code>POST /products</code> means "here is a new product, save it". Same address, different
+  meaning, because the method is different.</p>
+
+  <h3>What comes back</h3>
+
+  <p>Every response has a <strong>status code</strong>: a three digit number saying how it went.
+  You only need to know a handful.</p>
+
+  <table>
+    <thead><tr><th>Code</th><th>Means</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><strong>200</strong></td><td>Fine, here is your answer</td><td>Nothing, it worked</td></tr>
+      <tr><td><strong>201</strong></td><td>Created successfully</td><td>Nothing, it worked</td></tr>
+      <tr><td><strong>400</strong></td><td>You sent something wrong</td><td>Read the message, fix what you sent</td></tr>
+      <tr><td><strong>401</strong></td><td>I do not know who you are</td><td>Log in, send your token</td></tr>
+      <tr><td><strong>403</strong></td><td>I know you, but you are not allowed</td><td>Wrong role for this action</td></tr>
+      <tr><td><strong>404</strong></td><td>That address does not exist</td><td>Check the address for typos</td></tr>
+      <tr><td><strong>500</strong></td><td>The program itself broke</td><td>Look at the black window for the error</td></tr>
+    </tbody>
+  </table>
+
+  <div class="plain">
+    <h4>The two most confusing ones</h4>
+    <p><strong>401 and 403 are different.</strong> 401 means you did not show your ticket. 403 means
+    you showed a valid ticket, but it does not let you into this room.</p>
+    <p><strong>404 is often just a typo.</strong> An extra space or an extra slash at the end of the
+    address is enough to cause it.</p>
+  </div>
+</section>
+
+<section id="p5">
+  <p class="part">Part 5</p>
+  <h2>JSON, the format of the messages</h2>
+
+  <p>When you send information to the program, or it sends some back, it is written in a format
+  called <strong>JSON</strong>. It looks like this:</p>
+
+  <pre><code>{
+  "productName": "Wireless Mouse",
+  "category": "electronics",
+  "price": 1299
+}</code></pre>
+
+  <p>The rules are small:</p>
+
+  <ul>
+    <li>Curly brackets <code>{ }</code> wrap one thing.</li>
+    <li>Inside, you write <code>"name": value</code> pairs, separated by commas.</li>
+    <li>Text goes in double quotes. Numbers do not.</li>
+    <li>Square brackets <code>[ ]</code> mean a list of several things.</li>
+  </ul>
+
+  <p>So this is a list of two products:</p>
+
+  <pre><code>[
+  { "productName": "Wireless Mouse", "price": 1299 },
+  { "productName": "Keyboard",       "price": 2499 }
+]</code></pre>
+
+  <div class="warn">
+    <p><strong>The most common beginner mistake:</strong> a comma after the last item, or a missing
+    quote. JSON is strict. If you get a confusing error when sending something, check the commas
+    and quotes first.</p>
+  </div>
+</section>
+
+<section id="p6">
+  <p class="part">Part 6</p>
+  <h2>Where the information is kept: the database</h2>
+
+  <p>If the program only kept things in memory, everything would vanish when you close it. So
+  information is written to a <strong>database</strong>, which keeps it on disk.</p>
+
+  <p>Ours is <strong>MySQL</strong>. It stores information in <strong>tables</strong>, which are
+  very much like a spreadsheet: columns for the fields, one row per item.</p>
+
+  <pre><code>product table
+
+ productId | productName     | category    | price | ownerId
+-----------+-----------------+-------------+-------+---------
+     1     | Wireless Mouse  | electronics |  1299 |   19
+     2     | Keyboard        | electronics |  2499 |   19</code></pre>
+
+  <h3>Why five databases?</h3>
+
+  <p>Each service has its own separate database, named after it:
+  <code>shopcart_auth</code>, <code>shopcart_profile</code>, <code>shopcart_product</code>,
+  <code>shopcart_cart</code>, <code>shopcart_order</code>.</p>
+
+  <p>The rule is: <strong>a service may only touch its own database.</strong> The product service
+  cannot read the orders table. If it wants order information, it has to ask the order service
+  politely, through an API.</p>
+
+  <div class="plain">
+    <h4>Why so strict?</h4>
+    <p>Because it keeps the services genuinely separate. If everyone could read everyone's tables,
+    changing one table would break four other programs, and you would be back to one big tangled
+    program wearing five hats.</p>
+  </div>
+
+  <div class="note">
+    <p>You never have to create the tables yourself. Spring reads your Java classes and creates the
+    tables to match, the first time it runs. You only create the five empty databases.</p>
+  </div>
+</section>
+
+<section id="p7">
+  <p class="part">Part 7</p>
+  <h2>Login, and what a token actually is</h2>
+
+  <p>When someone signs up, we save their email and password. But we never save the password as
+  they typed it.</p>
+
+  <p>It is scrambled first, using something called <strong>BCrypt</strong>. The scrambling only
+  works one way: you cannot turn the scrambled text back into the password. To check a login, we
+  scramble what they just typed and compare the two scrambled versions.</p>
+
+  <div class="plain">
+    <h4>Why it matters</h4>
+    <p>If someone steals the database, they still do not have anyone's password. This is not
+    optional in real work, it is the minimum standard.</p>
+  </div>
+
+  <h3>The token</h3>
+
+  <p>After a successful login, the program gives you a long piece of text called a
+  <strong>token</strong>. It looks like nonsense:</p>
+
+  <pre><code>eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxOSIsInJvbGUiOiJTSE9QT1dORVIifQ.J9y3abaul...</code></pre>
+
+  <p>It is not nonsense. Inside, it says who you are and what role you have. It is also
+  <strong>signed</strong>, like a signature on a document, so nobody can change it without the
+  program noticing.</p>
+
+  <div class="plain">
+    <h4>Think of a cinema ticket</h4>
+    <p>You prove who you are once, at the counter, and you get a ticket. After that nobody asks for
+    your ID again. You just show the ticket, and it says which screen you are allowed into.</p>
+    <p>Our token is that ticket. You log in once, then send the token with every later request.
+    Ours expires after 24 hours, like a ticket for today's show only.</p>
+  </div>
+
+  <p>You send it in a <strong>header</strong>, which is extra information attached to a request:</p>
+
+  <pre><code>Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...</code></pre>
+
+  <p>In Postman you do not type that by hand. Go to the <strong>Authorization</strong> tab, choose
+  <strong>Bearer Token</strong>, and paste just the token. Postman writes the header for you.</p>
+
+  <div class="warn">
+    <p>Three things that cause a 401 even with a good token: pasting the quotes around it, pasting
+    it with a line break in the middle, or typing the word <code>Bearer</code> into the box when
+    Postman is already adding it.</p>
+  </div>
+</section>
+
+<section id="p8">
+  <p class="part">Part 8</p>
+  <h2>Three pieces with strange names</h2>
+
+  <p>These three cause the most confusion, and all three are simple ideas with technical names.</p>
+
+  <h3>The gateway: the guard at the door</h3>
+
+  <p>You never talk to the seven programs directly. Everything you send goes to one address,
+  <strong>the gateway</strong>, and it decides what happens next.</p>
+
+  <p>It does three things to every request:</p>
+
+  <ol>
+    <li>Checks your token is real and has not expired. If not: <strong>401</strong>.</li>
+    <li>Checks your role is allowed to do this. If not: <strong>403</strong>.</li>
+    <li>If both are fine, passes the request on to the right service.</li>
+  </ol>
+
+  <p>Because the guard has already checked, the services behind it do not check tokens at all. They
+  simply trust two notes the guard staples to the request: <em>who</em> the caller is, and
+  <em>what role</em> they have.</p>
+
+  <h3>Eureka: the phone directory</h3>
+
+  <p>The gateway needs to pass requests to <code>product-service</code>. But how does it know where
+  that is?</p>
+
+  <p>When each service starts, it phones a directory called <strong>Eureka</strong> and says "I am
+  product-service, I am at this address." Later, the gateway asks Eureka "where is
+  product-service?" and gets the address.</p>
+
+  <div class="plain">
+    <h4>Why not just write the address down?</h4>
+    <p>Because then every address is written in many places, and changing one means hunting through
+    all of them. With a directory you use the <em>name</em>, and the address is looked up when
+    needed.</p>
+    <p>This is why the phone directory has to be started <strong>first</strong>. If nobody is
+    answering the phone, nobody can register.</p>
+  </div>
+
+  <h3>Feign: asking another department</h3>
+
+  <p>Sometimes one service needs something from another. When you add an item to your basket, the
+  basket service does not know the price. It has to ask the product service.</p>
+
+  <p><strong>Feign</strong> is a tool that makes this look like a normal method call. You describe
+  the question you want to ask, and Feign writes all the messy network code for you.</p>
+
+  <pre><code>ProductDto product = productClient.getProductById(8);</code></pre>
+
+  <p>That single line quietly sends a request to another program, waits for the answer, and hands
+  it back. It looks local. It is not.</p>
+
+  <div class="plain">
+    <h4>Why the basket asks at all</h4>
+    <p>Because a price sent by the customer cannot be trusted. If the basket accepted whatever price
+    it was given, anyone could buy a laptop for one rupee. The price always comes from the product
+    service, which is the only place that really knows it.</p>
+  </div>
+</section>
+
+<section id="p9">
+  <p class="part">Part 9</p>
+  <h2>Inside one service: the eight folders</h2>
+
+  <p>Open any of the seven folders and you find the same eight folders inside. Once you understand
+  one service, you understand all of them.</p>
+
+  <p>Think of a request arriving as a customer walking into an office. It passes through people in
+  a fixed order:</p>
+
+  <div class="cards">
+    <div class="card"><h4>controller &#8212; the receptionist</h4>
+      <p>Takes the request at the door. Does no real work. Writes down what was asked and passes it
+      to the right person. Then hands the answer back.</p></div>
+    <div class="card"><h4>service &#8212; the person who does the work</h4>
+      <p>All the actual thinking lives here. "Is this price valid?" "Does this person own this
+      product?" Every rule in the project is in a service class.</p></div>
+    <div class="card"><h4>repository &#8212; the filing clerk</h4>
+      <p>The only one who touches the database. Fetches rows, saves rows. You write almost no code
+      here: you write the method name and Spring writes the query.</p></div>
+    <div class="card"><h4>model &#8212; the shape of a filing card</h4>
+      <p>A Java class describing one thing stored in the database. A <code>Product</code> has a
+      name, a category, a price. This becomes a table.</p></div>
+    <div class="card"><h4>dto &#8212; the shape of a message</h4>
+      <p>What goes out to the outside world, and what is accepted coming in. Deliberately not the
+      same as the model.</p></div>
+    <div class="card"><h4>exception &#8212; what to say when things go wrong</h4>
+      <p>Turns a problem into a tidy message with the right status code, instead of a page of red
+      error text.</p></div>
+    <div class="card"><h4>config &#8212; settings and setup</h4>
+      <p>Pieces that have to be prepared once when the program starts.</p></div>
+    <div class="card"><h4>aop &#8212; the CCTV camera</h4>
+      <p>Quietly writes a line in the log every time any method runs. Explained in a moment.</p></div>
+  </div>
+
+  <h3>Why model and DTO are separate</h3>
+
+  <p>This is the part people find fussy at first, and it has one very good reason.</p>
+
+  <p>The <strong>model</strong> for a user contains their password. If we sent the model straight
+  back to whoever asked, we would be handing out passwords. So there is a second class, the
+  <strong>DTO</strong>, which has all the same fields except the password.</p>
+
+  <div class="plain">
+    <h4>In plain words</h4>
+    <p>The model is what we <em>keep</em>. The DTO is what we are willing to <em>show</em>. They are
+    usually similar, and the differences are where the important decisions live.</p>
+  </div>
+
+  <div class="note">
+    <p>DTO stands for Data Transfer Object. The name tells you nothing useful. Just read it as
+    "the version we send".</p>
+  </div>
+</section>
+
+<section id="p10">
+  <p class="part">Part 10</p>
+  <h2>Words you will see in the code</h2>
+
+  <h3>Things starting with @</h3>
+
+  <p>Java code is full of words starting with <code>@</code>, like <code>@Entity</code> or
+  <code>@GetMapping</code>. These are called <strong>annotations</strong>. An annotation is a label
+  you stick on a class or a method, telling Spring how to treat it.</p>
+
+  <p>You are not calling anything. You are labelling something, and Spring reads the labels.</p>
+
+  <table>
+    <thead><tr><th>Annotation</th><th>What it says</th></tr></thead>
+    <tbody>
+      <tr><td><code>@Entity</code></td><td>This class is a database table</td></tr>
+      <tr><td><code>@Id</code></td><td>This field is the unique number for each row</td></tr>
+      <tr><td><code>@RestController</code></td><td>This class receives web requests</td></tr>
+      <tr><td><code>@GetMapping("/products")</code></td><td>Run this method for GET /products</td></tr>
+      <tr><td><code>@PostMapping</code></td><td>Same, but for POST</td></tr>
+      <tr><td><code>@RequestBody</code></td><td>Take the JSON that was sent and turn it into an object</td></tr>
+      <tr><td><code>@Service</code></td><td>This class holds rules; Spring, please manage it</td></tr>
+      <tr><td><code>@Valid</code></td><td>Check the rules on this before running anything</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Lombok</h3>
+
+  <p>In Java, a class normally needs a <code>getName()</code> and <code>setName()</code> method for
+  every single field. For a class with ten fields that is twenty boring methods.</p>
+
+  <p><strong>Lombok</strong> writes them for you. You put <code>@Data</code> on the class and the
+  methods appear when the code is compiled, without being in the file.</p>
+
+  <pre><code>@Data
+public class Product {
+    private String productName;
+    private double price;
+}
+// getProductName(), setProductName(), getPrice(), setPrice()
+// all exist, even though you cannot see them</code></pre>
+
+  <div class="warn">
+    <p><strong>This causes a famous confusion.</strong> If Lombok is not set up in Eclipse, the
+    editor cannot see those invisible methods, and shows hundreds of red errors like
+    <code>getPrice() is undefined</code> even though the project builds fine.</p>
+    <p>The fix is a one-time setup: run <code>java -jar lombok.jar</code>, point it at your Eclipse
+    folder, restart Eclipse.</p>
+  </div>
+
+  <h3>Validation</h3>
+
+  <p>We check what people send us <em>before</em> doing anything with it. The rules sit right next
+  to the field they protect:</p>
+
+  <pre><code>@NotBlank(message = "product name is required")
+private String productName;
+
+@Positive(message = "price must be greater than 0")
+private double price;</code></pre>
+
+  <p>If someone sends a blank name, they get a 400 back with that exact message. No rule in the
+  rest of the code has to worry about it.</p>
+
+  <div class="note">
+    <p>One catch: the rules only run if the method is marked <code>@Valid</code>. Without that word,
+    the annotations sit there doing nothing at all.</p>
+  </div>
+
+  <h3>AOP, the CCTV camera</h3>
+
+  <p>We wanted a log line every time any method runs: what was called, how long it took, and
+  whether it failed. Writing that inside every method would mean hundreds of copies of the same
+  three lines.</p>
+
+  <p><strong>AOP</strong> lets you write it <em>once</em>, in one small class, and say "apply this
+  around every method in the controller and service folders". Nothing in the business code changes.</p>
+
+  <pre><code>ProductController.addProduct called
+ProductController.addProduct returned in 84ms
+ProductServiceImpl.deleteProduct threw NotFoundException: no product 91</code></pre>
+
+  <div class="plain">
+    <h4>In plain words</h4>
+    <p>A camera watching every room, installed once, rather than asking every person in the building
+    to write their own diary.</p>
+    <p>AOP stands for Aspect Oriented Programming. Again, the name helps nobody. It means
+    "behaviour added around your code from the outside".</p>
+  </div>
+
+  <div class="note">
+    <p>One deliberate exception: the camera is switched off for login and sign-up, because their
+    inputs contain the actual password, and passwords must never appear in a log file.</p>
+  </div>
+</section>
+
+<section id="p11">
+  <p class="part">Part 11</p>
+  <h2>Following one real request all the way through</h2>
+
+  <p>Here is what actually happens when a customer adds a mouse to their basket. This is the whole
+  system in one example.</p>
+
+  <figure>
+    <svg viewBox="0 0 780 300" role="img" aria-label="A request to add an item to the basket goes from Postman to the gateway, which checks the token and adds identity notes, then to the cart service, which asks the product service for the real price before saving the row and answering.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g font-size="12.5" fill="currentColor" font-weight="600">
+        <text x="60"  y="24" text-anchor="middle">Postman</text>
+        <text x="270" y="24" text-anchor="middle">Gateway</text>
+        <text x="500" y="24" text-anchor="middle">Cart service</text>
+        <text x="710" y="24" text-anchor="middle">Product service</text>
+      </g>
+      <g stroke="currentColor" stroke-width="1.1" opacity=".3">
+        <line x1="60"  y1="34" x2="60"  y2="272"/>
+        <line x1="270" y1="34" x2="270" y2="272"/>
+        <line x1="500" y1="34" x2="500" y2="272"/>
+        <line x1="710" y1="34" x2="710" y2="272"/>
+      </g>
+      <g font-size="11.5" fill="currentColor">
+        <line x1="60" y1="66" x2="263" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="161" y="58" text-anchor="middle">1. add product 8, quantity 2</text>
+        <text x="161" y="80" text-anchor="middle" opacity=".7">plus my token</text>
+
+        <line x1="270" y1="118" x2="493" y2="118" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="382" y="110" text-anchor="middle">2. token is fine, role is USER</text>
+        <text x="382" y="132" text-anchor="middle" opacity=".7">note attached: this is user 20</text>
+
+        <line x1="500" y1="170" x2="703" y2="170" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="601" y="162" text-anchor="middle">3. what does product 8 cost?</text>
+
+        <line x1="710" y1="206" x2="507" y2="206" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+        <text x="608" y="198" text-anchor="middle">4. it is 1299</text>
+
+        <line x1="500" y1="252" x2="67" y2="252" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+        <text x="284" y="244" text-anchor="middle">6. here is your basket, total 2598</text>
+      </g>
+      <rect x="430" y="212" width="180" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+      <text x="520" y="231" text-anchor="middle" font-size="11" fill="currentColor">5. saved to the database</text>
+    </svg>
+    <figcaption>Step 3 is the important one. The customer never sends a price, and if they do, it is
+    thrown away.</figcaption>
+  </figure>
+
+  <p>Now the same thing in real requests you can copy into Postman.</p>
+
+  <div class="steps">
+    <div class="stepbox">
+      <h4>The customer sends this</h4>
+      <pre><code>POST http://localhost:9090/cart/items
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...
+
+{ "productId": 8, "quantity": 2, "price": 1 }</code></pre>
+      <p>Notice they cheekily included <code>"price": 1</code>.</p>
+    </div>
+    <div class="stepbox">
+      <h4>What comes back</h4>
+      <pre><code>{
+  "userId": 20,
+  "items": [
+    { "productId": 8,
+      "productName": "Wireless Mouse",
+      "price": 1299.0,
+      "quantity": 2,
+      "lineTotal": 2598.0 }
+  ],
+  "totalPrice": 2598.0
+}</code></pre>
+      <p>The price is <strong>1299</strong>, not 1. The basket asked the product service and ignored
+      what the customer sent. That one detail is the difference between a working shop and a shop
+      anyone can rob.</p>
+    </div>
+  </div>
+
+  <p>And notice something else: nowhere did the customer say who they were. There is no user id in
+  the address or in the message. The gateway worked it out from the token and attached it. That is
+  why one customer can never see another customer's basket.</p>
+</section>
+
+<section id="p12">
+  <p class="part">Part 12</p>
+  <h2>Running it yourself</h2>
+
+  <p>Do these in order. The first time takes a while; after that it is quick.</p>
+
+  <div class="steps">
+    <div class="stepbox">
+      <h4>1. Check you have Java</h4>
+      <p>Open Command Prompt and type:</p>
+      <pre><code>java -version</code></pre>
+      <p>If you see a version number of 17 or higher, you are fine. If it says the command is not
+      recognised, Java needs installing first.</p>
+    </div>
+
+    <div class="stepbox">
+      <h4>2. Install Lombok into Eclipse</h4>
+      <p>Only needed if you are using Eclipse. Find <code>lombok.jar</code> inside your
+      <code>.m2</code> folder, then:</p>
+      <pre><code>java -jar lombok.jar</code></pre>
+      <p>Click Install, point it at your Eclipse folder, restart Eclipse. Skip this and the editor
+      will show hundreds of errors that are not real.</p>
+    </div>
+
+    <div class="stepbox">
+      <h4>3. Create the five databases</h4>
+      <p>Open MySQL Workbench and run:</p>
+      <pre><code>CREATE DATABASE shopcart_auth;
+CREATE DATABASE shopcart_profile;
+CREATE DATABASE shopcart_product;
+CREATE DATABASE shopcart_cart;
+CREATE DATABASE shopcart_order;</code></pre>
+      <p>They stay empty. The tables inside appear on their own the first time each service runs.</p>
+    </div>
+
+    <div class="stepbox">
+      <h4>4. Tell the programs your MySQL password</h4>
+      <pre><code>setx DB_PASSWORD "your-mysql-password"</code></pre>
+      <p>Then <strong>close that window and open a new one</strong>. This command only affects
+      windows opened afterwards, which catches everybody out at least once.</p>
+    </div>
+
+    <div class="stepbox">
+      <h4>5. Start the programs</h4>
+      <p>From the project folder:</p>
+      <pre><code>run-local.cmd</code></pre>
+      <p>Seven windows open, one per program. Or start them yourself, one per window, with
+      <code>java -jar target\&lt;name&gt;-1.0.0.jar</code> inside each folder.</p>
+      <p><strong>The order matters.</strong> <code>discovery-server</code> first, wait until it is
+      ready, then the five services, then <code>api-gateway</code> last.</p>
+    </div>
+
+    <div class="stepbox">
+      <h4>6. Check they are all alive</h4>
+      <p>Open <code>http://localhost:8761</code> in a browser. You should see a list with six
+      applications in it. If a name is missing, that program did not start: look at its window for
+      red text.</p>
+      <p>A healthy window ends with a line like <code>Started ProductServiceApplication in 5.1
+      seconds</code>.</p>
+    </div>
+
+    <div class="stepbox">
+      <h4>7. Try it</h4>
+      <p>In a browser, <code>http://localhost:9090/products</code> should show <code>[]</code>, an
+      empty list. That means everything is connected. Then move to Postman for the rest.</p>
+    </div>
+  </div>
+
+  <div class="warn">
+    <p>Opening <code>http://localhost:9090</code> on its own gives a <strong>404</strong>. That is
+    correct and not a fault. Nothing is set up at the plain address; you have to ask for something
+    specific, like <code>/products</code>.</p>
+  </div>
+</section>
+
+<section id="p13">
+  <p class="part">Part 13</p>
+  <h2>When something breaks</h2>
+
+  <p>Every one of these has happened to someone on this project already.</p>
+
+  <table>
+    <thead><tr><th>What you see</th><th>What it really means</th></tr></thead>
+    <tbody>
+      <tr><td>Hundreds of red errors like <code>getPrice() is undefined</code></td>
+          <td>Lombok is not installed in Eclipse. Part 12, step 2.</td></tr>
+      <tr><td><code>Port 8080 was already in use</code></td>
+          <td>Another program has that number. Change <code>server.port</code> in that service's
+          <code>application.yml</code> to a free one.</td></tr>
+      <tr><td><code>Communications link failure</code></td>
+          <td>MySQL is not running. Start the MySQL service.</td></tr>
+      <tr><td><code>Access denied for user</code></td>
+          <td>Wrong MySQL password, or you did not open a new window after
+          <code>setx</code>.</td></tr>
+      <tr><td><code>Unknown database shopcart_cart</code></td>
+          <td>The five CREATE DATABASE lines were not all run.</td></tr>
+      <tr><td><code>503 Service Unavailable</code></td>
+          <td>The program being asked for is not running, or has not registered yet. Wait 30
+          seconds and check port 8761.</td></tr>
+      <tr><td><strong>401</strong> on everything</td>
+          <td>Token missing, expired after 24 hours, or pasted with a line break.</td></tr>
+      <tr><td><strong>403</strong> when it should work</td>
+          <td>Wrong role, <em>or</em> a stray space or slash at the end of the address. Both look
+          identical from outside.</td></tr>
+      <tr><td>The window flashes and closes instantly</td>
+          <td>The program failed at startup. Run it from a terminal instead so the error stays on
+          screen.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="plain">
+    <h4>The habit worth building</h4>
+    <p>When something fails, do not guess. The answer is almost always written in the black window
+    of the program that failed. Read the <em>first</em> red line, not the last: the lines below it
+    are usually just consequences.</p>
+  </div>
+</section>
+
+<section id="p14">
+  <p class="part">Part 14</p>
+  <h2>Small dictionary</h2>
+
+  <div class="gloss">
+    <div><b>API</b><span>A list of things a program will do if you ask properly.</span></div>
+    <div><b>endpoint</b><span>One specific thing you can ask for, like <code>/products</code>.</span></div>
+    <div><b>request</b><span>The message you send.</span></div>
+    <div><b>response</b><span>The message that comes back.</span></div>
+    <div><b>method</b><span>GET, POST, PUT or DELETE. What kind of thing you want to do.</span></div>
+    <div><b>status code</b><span>The three digit number saying how it went. 200 good, 400 your mistake, 500 our mistake.</span></div>
+    <div><b>JSON</b><span>The format messages are written in, with curly brackets and quotes.</span></div>
+    <div><b>header</b><span>Extra information attached to a request, such as your token.</span></div>
+    <div><b>token</b><span>The pass you get after logging in, sent with every later request.</span></div>
+    <div><b>JWT</b><span>The particular kind of token we use. It is signed, so it cannot be faked.</span></div>
+    <div><b>BCrypt</b><span>The one-way scrambling used on passwords before saving them.</span></div>
+    <div><b>role</b><span>USER, SHOPOWNER or ADMIN. Decides what you are allowed to do.</span></div>
+    <div><b>microservice</b><span>One small program doing one job, working with others.</span></div>
+    <div><b>gateway</b><span>The single front door that checks everyone before letting them in.</span></div>
+    <div><b>Eureka</b><span>The directory where the programs register so they can find each other.</span></div>
+    <div><b>Feign</b><span>The tool that lets one program call another as if it were a normal method.</span></div>
+    <div><b>entity / model</b><span>A Java class that describes one database table.</span></div>
+    <div><b>DTO</b><span>The version of that information we are willing to send out.</span></div>
+    <div><b>repository</b><span>The class that reads and writes the database.</span></div>
+    <div><b>controller</b><span>The class that receives web requests.</span></div>
+    <div><b>service</b><span>The class holding the actual rules.</span></div>
+    <div><b>annotation</b><span>A label starting with @ that tells Spring how to treat something.</span></div>
+    <div><b>Lombok</b><span>A tool that writes the repetitive getter and setter methods for you.</span></div>
+    <div><b>AOP</b><span>Adding behaviour, like logging, around your code from the outside.</span></div>
+    <div><b>Maven</b><span>The tool that downloads the libraries and builds the project.</span></div>
+    <div><b>pom.xml</b><span>The shopping list of libraries a project needs.</span></div>
+    <div><b>jar</b><span>The finished, runnable file that Maven produces.</span></div>
+    <div><b>port</b><span>A numbered door on your computer. Only one program per number.</span></div>
+    <div><b>localhost</b><span>This computer, right here.</span></div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer><div class="wrap">Every example here was taken from the project actually running. If
+something in the code disagrees with this page, the code is right and this page needs
+updating.</div></footer>
+</body>
+</html>
