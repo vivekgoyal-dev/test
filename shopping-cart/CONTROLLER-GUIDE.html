@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing a Controller</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Karla:ital,wght@0,400;0,600;1,400&family=Source+Code+Pro:wght@400;500&display=swap">
+<style>
+:root {
+  --ground: #f5f4f8;
+  --surface: #ffffff;
+  --surface-2: #faf9fc;
+  --ink: #1b1720;
+  --ink-soft: #55505f;
+  --ink-faint: #857f92;
+  --line: #e0dde8;
+  --accent: #6a4a8f;
+  --accent-ink: #5c3f7d;
+  --accent-wash: #eeeaf5;
+  --amber: #8a6112;
+  --amber-wash: #faf2e2;
+  --green: #2c6b4f;
+  --green-wash: #e6f2eb;
+  --red: #97363b;
+  --red-wash: #f9eaeb;
+  --code-bg: #221c2b;
+  --code-ink: #e6e2ee;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #131017;
+    --surface: #1b1722;
+    --surface-2: #211c29;
+    --ink: #ece9f2;
+    --ink-soft: #a9a2b8;
+    --ink-faint: #837c93;
+    --line: #2e2839;
+    --accent: #b399db;
+    --accent-ink: #c3aee6;
+    --accent-wash: #241d33;
+    --amber: #d5a44f;
+    --amber-wash: #2b2213;
+    --green: #6cc79a;
+    --green-wash: #13291f;
+    --red: #d98287;
+    --red-wash: #2b1618;
+    --code-bg: #100d15;
+    --code-ink: #e6e2ee;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #131017;
+  --surface: #1b1722;
+  --surface-2: #211c29;
+  --ink: #ece9f2;
+  --ink-soft: #a9a2b8;
+  --ink-faint: #837c93;
+  --line: #2e2839;
+  --accent: #b399db;
+  --accent-ink: #c3aee6;
+  --accent-wash: #241d33;
+  --amber: #d5a44f;
+  --amber-wash: #2b2213;
+  --green: #6cc79a;
+  --green-wash: #13291f;
+  --red: #d98287;
+  --red-wash: #2b1618;
+  --code-bg: #100d15;
+  --code-ink: #e6e2ee;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: Karla, ui-sans-serif, system-ui, sans-serif;
+  font-size: 17.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }
+a { color: var(--accent-ink); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+code { font-family: "Source Code Pro", ui-monospace, monospace; font-size: 0.85em; }
+p code, li code, td code {
+  background: var(--accent-wash); color: var(--accent-ink);
+  padding: .12em .38em; border-radius: 4px;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 26px; }
+
+.masthead { background: var(--surface); border-bottom: 1px solid var(--line); padding: 60px 0 46px; }
+.kicker {
+  font-family: "Source Code Pro", monospace; font-size: 11.5px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 16px;
+}
+h1 { font-size: clamp(2.1rem, 5.5vw, 3.1rem); line-height: 1.08; margin: 0; text-wrap: balance; }
+.standfirst { font-size: 1.15rem; color: var(--ink-soft); margin: 18px 0 0; }
+
+.toc-box {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 22px 26px; margin: 40px 0;
+}
+.toc-box h3 { margin: 0 0 12px; font-size: 1rem; }
+.toc-box ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 30px; }
+.toc-box li { margin-bottom: 5px; font-size: 15px; }
+.toc-box a { text-decoration: none; color: var(--ink-soft); }
+.toc-box a:hover { color: var(--accent-ink); text-decoration: underline; }
+
+main { padding: 10px 0 90px; }
+section { margin-bottom: 56px; scroll-margin-top: 20px; }
+.part {
+  font-family: "Source Code Pro", monospace; font-size: 11.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 6px;
+}
+h2 { font-size: 1.72rem; margin: 0 0 18px; line-height: 1.2; }
+h3 { font-size: 1.16rem; margin: 32px 0 10px; }
+p { margin: 0 0 16px; }
+
+.plain {
+  background: var(--accent-wash); border-radius: 10px; padding: 18px 22px; margin: 22px 0;
+}
+.plain h4 {
+  font-family: "Source Code Pro", monospace; font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent-ink); margin: 0 0 8px; font-weight: 500;
+}
+.plain p:last-child { margin-bottom: 0; }
+
+.note, .warn {
+  border-left: 4px solid var(--amber); background: var(--amber-wash);
+  padding: 14px 20px; border-radius: 0 8px 8px 0; margin: 22px 0; font-size: 16px;
+}
+.note { border-left-color: var(--ink-faint); background: var(--surface-2); color: var(--ink-soft); }
+.note p:last-child, .warn p:last-child { margin-bottom: 0; }
+
+pre {
+  background: var(--code-bg); color: var(--code-ink); border-radius: 8px;
+  padding: 16px 18px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; margin: 18px 0;
+}
+pre code { color: inherit; background: none; padding: 0; font-size: inherit; }
+
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; display: block; overflow-x: auto; }
+th {
+  text-align: left; font-family: "Source Code Pro", monospace; font-size: 11px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
+  border-bottom: 1px solid var(--line); padding: 8px 14px 8px 0; white-space: nowrap;
+}
+td { padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+
+.cards { display: grid; gap: 12px; margin: 22px 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
+.card h4 { margin: 0 0 5px; font-family: Fraunces, serif; font-size: 1.03rem; font-weight: 600; }
+.card p { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
+
+figure { margin: 26px 0; padding: 22px 18px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+figure svg { display: block; width: 100%; height: auto; color: var(--ink); }
+figcaption { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); }
+
+.steps { counter-reset: s; display: grid; gap: 14px; margin: 24px 0; }
+.stepbox {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 18px 22px; position: relative;
+}
+.stepbox h4 { margin: 0 0 8px; font-family: Fraunces, serif; font-size: 1.06rem; font-weight: 600; }
+.stepbox p { font-size: 16px; }
+.stepbox p:last-child, .stepbox pre:last-child { margin-bottom: 0; }
+
+.gloss { display: grid; gap: 0; margin: 22px 0; }
+.gloss > div { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 168px minmax(0,1fr); gap: 18px; }
+.gloss b { font-family: "Source Code Pro", monospace; font-size: 14px; color: var(--accent-ink); }
+.gloss span { font-size: 16px; color: var(--ink-soft); }
+
+footer { border-top: 1px solid var(--line); padding: 26px 0 60px; color: var(--ink-faint); font-size: 14px; }
+
+@media (max-width: 700px) {
+  .toc-box ol { columns: 1; }
+  .gloss > div { grid-template-columns: 1fr; gap: 3px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style><style>
+.anno { display: grid; grid-template-columns: minmax(0,1fr); gap: 0; margin: 20px 0; }
+.anno pre { margin: 0 0 2px; }
+.line { display: grid; grid-template-columns: 26px minmax(0,1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.line b { font-family: "Source Code Pro", monospace; font-size: 12px; color: var(--accent-ink); }
+.line span { font-size: 15.5px; color: var(--ink-soft); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 22px 0; }
+.two > div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.two h4 { margin: 0 0 6px; font-family: Fraunces, serif; font-size: 1rem; }
+.two p { margin: 0; font-size: 15px; color: var(--ink-soft); }
+.two pre { margin: 10px 0 0; font-size: 12.5px; }
+.bad { border-left: 4px solid var(--red); background: var(--red-wash); padding: 14px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 16px; }
+.bad p:last-child { margin-bottom: 0; }
+.good { border-left: 4px solid var(--green); background: var(--green-wash); padding: 14px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 16px; }
+.good p:last-child { margin-bottom: 0; }
+</style>
+
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <p class="kicker">Companion to the beginner guide</p>
+    <h1>Writing a Controller</h1>
+    <p class="standfirst">The one class that receives web requests. What each line does, the four ways
+    to get information out of a request, and a template to copy.</p>
+  </div>
+</header>
+
+<div class="wrap">
+<main>
+
+<section id="c1">
+  <p class="part">Part 1</p>
+  <h2>What a controller is for</h2>
+
+  <p>A controller is the class that <strong>receives requests from outside</strong>. When someone
+  sends <code>GET /products</code>, a method in a controller runs.</p>
+
+  <p>Its job is deliberately small. Four steps, always the same:</p>
+
+  <div class="cards">
+    <div class="card"><h4>1. Receive</h4><p>Take the address, the JSON, and any headers.</p></div>
+    <div class="card"><h4>2. Call one service method</h4><p>Hand the work to the service class.</p></div>
+    <div class="card"><h4>3. Wrap the answer</h4><p>Put the result in a <code>ResponseEntity</code> with a status code.</p></div>
+    <div class="card"><h4>4. Return it</h4><p>Spring turns it into JSON and sends it back.</p></div>
+  </div>
+
+  <div class="plain">
+    <h4>The rule to remember</h4>
+    <p>A controller contains <strong>no thinking</strong>. No calculations, no database, no
+    <code>if</code> deciding what is allowed. If you find yourself writing an <code>if</code> about
+    business rules, that code belongs in the service class instead.</p>
+    <p>A good controller method is usually one line long.</p>
+  </div>
+</section>
+
+<section id="c2">
+  <p class="part">Part 2</p>
+  <h2>The top of the class, line by line</h2>
+
+  <p>This is the real start of <code>ProductController</code> from the project.</p>
+
+  <pre><code>@RestController
+@RequestMapping("/products")
+public class ProductController {
+
+    private final ProductService service;
+
+    public ProductController(ProductService service) {
+        this.service = service;
+    }</code></pre>
+
+  <div class="anno">
+    <div class="line"><b>1</b><span><code>@RestController</code> tells Spring this class handles web
+    requests, and that whatever a method returns should be turned into JSON.</span></div>
+    <div class="line"><b>2</b><span><code>@RequestMapping("/products")</code> puts
+    <code>/products</code> in front of every address in this class. It saves repeating it on every
+    method.</span></div>
+    <div class="line"><b>5</b><span>The service is stored in a field. This is the class that does the
+    real work.</span></div>
+    <div class="line"><b>7</b><span>The constructor takes the service as a parameter. You never write
+    <code>new ProductService()</code> anywhere. Spring sees the constructor, creates the service, and
+    passes it in for you.</span></div>
+  </div>
+
+  <div class="plain">
+    <h4>That last point has a name</h4>
+    <p>It is called <strong>dependency injection</strong>. It means: do not build the things you
+    need, ask for them, and let Spring hand them over. It is why Spring code has so few
+    <code>new</code> keywords in it.</p>
+  </div>
+</section>
+
+<section id="c3">
+  <p class="part">Part 3</p>
+  <h2>One method per endpoint</h2>
+
+  <p>Each thing the outside world can ask for is one method, labelled with the kind of request it
+  answers.</p>
+
+  <table>
+    <thead><tr><th>Label</th><th>Answers</th></tr></thead>
+    <tbody>
+      <tr><td><code>@GetMapping</code></td><td>GET, for reading</td></tr>
+      <tr><td><code>@PostMapping</code></td><td>POST, for creating</td></tr>
+      <tr><td><code>@PutMapping</code></td><td>PUT, for updating</td></tr>
+      <tr><td><code>@DeleteMapping</code></td><td>DELETE, for removing</td></tr>
+    </tbody>
+  </table>
+
+  <p>Whatever is inside the brackets is added after the class address:</p>
+
+  <pre><code>@RequestMapping("/products")     on the class
+@GetMapping("/my")               on the method
+                                 answers:  GET /products/my
+
+@GetMapping                      no brackets at all
+                                 answers:  GET /products</code></pre>
+
+  <div class="good">
+    <p>Two methods can share an address if their labels differ.
+    <code>@GetMapping</code> and <code>@PostMapping</code> with no brackets both live at
+    <code>/products</code>, and Spring picks the right one based on how the request was sent.</p>
+  </div>
+</section>
+
+<section id="c4">
+  <p class="part">Part 4</p>
+  <h2>The four ways to get information in</h2>
+
+  <p>This is the part worth learning properly. A request can carry information in four different
+  places, and each has its own label.</p>
+
+  <div class="two">
+    <div>
+      <h4>@PathVariable</h4>
+      <p>Part of the address itself. Used for "which one".</p>
+      <pre><code>GET /products/8
+
+@GetMapping("/{productId}")
+getById(@PathVariable Long productId)</code></pre>
+    </div>
+    <div>
+      <h4>@RequestParam</h4>
+      <p>After a <code>?</code> in the address. Used for extra options.</p>
+      <pre><code>PUT /cart/items/8?quantity=3
+
+@PutMapping("/items/{productId}")
+update(@RequestParam int quantity)</code></pre>
+    </div>
+    <div>
+      <h4>@RequestBody</h4>
+      <p>The JSON sent with the request. Used when creating or updating something.</p>
+      <pre><code>POST /products
+{ "productName": "Mouse",
+  "price": 1299 }
+
+add(@RequestBody ProductDto dto)</code></pre>
+    </div>
+    <div>
+      <h4>@RequestHeader</h4>
+      <p>Extra information attached to the request. We use it for who is calling.</p>
+      <pre><code>X-User-Id: 19
+
+add(@RequestHeader("X-User-Id")
+    Long ownerId)</code></pre>
+    </div>
+  </div>
+
+  <p>The names have to match. With <code>@PathVariable</code>, the method parameter must be named
+  the same as the word in the curly brackets:</p>
+
+  <pre><code>@GetMapping("/{productId}")
+public ResponseEntity&lt;ProductDto&gt; getById(@PathVariable Long productId) {
+                    same word --^                              ^-- and here</code></pre>
+
+  <div class="warn">
+    <p>If the names differ, Spring cannot work out which is which and the request fails. If you want
+    them to differ, say so: <code>@PathVariable("productId") Long id</code>.</p>
+  </div>
+
+  <h3>Why we never take the user id from the address</h3>
+
+  <p>Notice that no endpoint in this project looks like <code>/cart/{userId}</code>. The user id
+  always arrives in the <code>X-User-Id</code> header, put there by the gateway after it checked the
+  token.</p>
+
+  <div class="bad">
+    <p><strong>If it came from the address</strong>, anyone could type someone else's number and read
+    their basket. A value in the address is chosen by the caller. A value in that header was decided
+    by the gateway from a signed token, and the caller cannot fake it.</p>
+  </div>
+</section>
+
+<section id="c5">
+  <p class="part">Part 5</p>
+  <h2>Sending the answer back</h2>
+
+  <p>Every method returns a <code>ResponseEntity</code>. That is just the answer plus the status
+  code you want to send with it.</p>
+
+  <pre><code>return ResponseEntity.ok(service.getAll());
+// 200, with the list as JSON
+
+return ResponseEntity.status(HttpStatus.CREATED).body(service.add(dto, ownerId));
+// 201, with the new product as JSON
+
+return ResponseEntity.noContent().build();
+// 204, nothing in the body. Used after a delete</code></pre>
+
+  <p>The type in the angle brackets says what the body will contain:</p>
+
+  <pre><code>ResponseEntity&lt;ProductDto&gt;         one product
+ResponseEntity&lt;List&lt;ProductDto&gt;&gt;   a list of products
+ResponseEntity&lt;Void&gt;               nothing at all</code></pre>
+
+  <div class="note">
+    <p>You could return the object directly, without <code>ResponseEntity</code>, and Spring would
+    send 200. We use <code>ResponseEntity</code> everywhere so that creating something can answer
+    <strong>201 Created</strong> rather than 200, which is the correct code and costs nothing.</p>
+  </div>
+
+  <h3>What about errors?</h3>
+
+  <p>Nothing. The controller never handles errors. If a product does not exist, the service throws
+  an exception, and a separate class turns it into a tidy 404. There are no
+  <code>try</code>/<code>catch</code> blocks in any controller in this project.</p>
+</section>
+
+<section id="c6">
+  <p class="part">Part 6</p>
+  <h2>Checking what was sent</h2>
+
+  <p>The rules about what is acceptable live on the DTO class, next to each field:</p>
+
+  <pre><code>public class ProductDto {
+
+    @NotBlank(message = "product name is required")
+    private String productName;
+
+    @Positive(message = "price must be greater than 0")
+    private double price;
+}</code></pre>
+
+  <p>But they only run if the controller asks for them, with <code>@Valid</code>:</p>
+
+  <pre><code>public ResponseEntity&lt;ProductDto&gt; add(@Valid @RequestBody ProductDto dto) {</code></pre>
+
+  <div class="bad">
+    <p><strong>Forgetting <code>@Valid</code> is the single most common mistake here.</strong> The
+    annotations on the DTO look right, the code compiles, and nothing is ever checked. A blank name
+    sails straight through into the database.</p>
+  </div>
+
+  <p>With it in place, sending a blank name produces this automatically:</p>
+
+  <pre><code>{
+  "status": 400,
+  "message": "validation failed",
+  "errors": { "productName": "product name is required" },
+  "timestamp": "2026-09-10T00:07:10"
+}</code></pre>
+</section>
+
+<section id="c7">
+  <p class="part">Part 7</p>
+  <h2>A complete real method, explained</h2>
+
+  <p>This is <code>add</code> from <code>ProductController</code>, exactly as it is in the project.</p>
+
+  <pre><code>@PostMapping
+public ResponseEntity&lt;ProductDto&gt; add(@RequestHeader("X-User-Id") Long ownerId,
+                                      @Valid @RequestBody ProductDto dto) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.add(dto, ownerId));
+}</code></pre>
+
+  <div class="anno">
+    <div class="line"><b>1</b><span>Answers <code>POST /products</code>. No brackets, so it uses the
+    class address as it is.</span></div>
+    <div class="line"><b>2</b><span>Will send back one product, as JSON.</span></div>
+    <div class="line"><b>2</b><span>Takes who is calling from the header the gateway attached. The
+    caller cannot choose this.</span></div>
+    <div class="line"><b>3</b><span>Takes the JSON that was sent and turns it into a
+    <code>ProductDto</code>, checking the rules on it first.</span></div>
+    <div class="line"><b>4</b><span>Calls the service, once, and answers <strong>201 Created</strong>
+    with whatever came back.</span></div>
+  </div>
+
+  <p>One line of real work. Everything else is labels describing what goes in and what comes out.
+  Notice what is <em>not</em> there: no database, no price calculation, no check about who owns
+  what, no error handling. All of that lives in the service.</p>
+</section>
+
+<section id="c8">
+  <p class="part">Part 8</p>
+  <h2>A template to copy</h2>
+
+  <p>Replace <code>Thing</code> with whatever you are building, and delete the methods you do not
+  need.</p>
+
+  <pre><code>package com.shoppingcart.thing.controller;
+
+import com.shoppingcart.thing.dto.ThingDto;
+import com.shoppingcart.thing.service.ThingService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/things")
+public class ThingController {
+
+    private final ThingService service;
+
+    public ThingController(ThingService service) {
+        this.service = service;
+    }
+
+    // GET /things
+    @GetMapping
+    public ResponseEntity&lt;List&lt;ThingDto&gt;&gt; getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+    // GET /things/5
+    @GetMapping("/{thingId}")
+    public ResponseEntity&lt;ThingDto&gt; getById(@PathVariable Long thingId) {
+        return ResponseEntity.ok(service.getById(thingId));
+    }
+
+    // POST /things
+    @PostMapping
+    public ResponseEntity&lt;ThingDto&gt; add(@RequestHeader("X-User-Id") Long userId,
+                                        @Valid @RequestBody ThingDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.add(dto, userId));
+    }
+
+    // PUT /things/5
+    @PutMapping("/{thingId}")
+    public ResponseEntity&lt;ThingDto&gt; update(@PathVariable Long thingId,
+                                           @RequestHeader("X-User-Id") Long userId,
+                                           @Valid @RequestBody ThingDto dto) {
+        return ResponseEntity.ok(service.update(thingId, dto, userId));
+    }
+
+    // DELETE /things/5
+    @DeleteMapping("/{thingId}")
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable Long thingId,
+                                       @RequestHeader("X-User-Id") Long userId) {
+        service.delete(thingId, userId);
+        return ResponseEntity.noContent().build();
+    }
+}</code></pre>
+
+  <div class="note">
+    <p>The imports matter. <code>jakarta.validation.Valid</code>, not <code>javax</code>: Spring Boot
+    3 renamed these, and most older tutorials online still show <code>javax</code>, which will not
+    compile here.</p>
+  </div>
+</section>
+
+<section id="c9">
+  <p class="part">Part 9</p>
+  <h2>Mistakes to expect</h2>
+
+  <table>
+    <thead><tr><th>What happens</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>404 on an address you just wrote</td>
+          <td>The class is missing <code>@RestController</code>, or the address does not match once
+          you combine the class and method parts.</td></tr>
+      <tr><td>Validation never runs</td>
+          <td><code>@Valid</code> missing on the parameter.</td></tr>
+      <tr><td>The JSON arrives with every field empty</td>
+          <td><code>@RequestBody</code> missing, or the field names in the JSON do not match the DTO
+          field names.</td></tr>
+      <tr><td><code>required request header X-User-Id is not present</code></td>
+          <td>You called the service port directly instead of going through the gateway on
+          9090.</td></tr>
+      <tr><td>Two methods answer the same address</td>
+          <td>Spring refuses to start and says the mapping is ambiguous. Two methods have the same
+          label and the same brackets.</td></tr>
+      <tr><td>Returns text instead of JSON</td>
+          <td><code>@Controller</code> was used instead of <code>@RestController</code>.</td></tr>
+      <tr><td>The method never runs</td>
+          <td>Wrong kind of label: sending POST to a method marked
+          <code>@GetMapping</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="plain">
+    <h4>How to check a new endpoint quickly</h4>
+    <p>Start the service, then open its own Swagger page in a browser, for example
+    <code>http://localhost:8083/swagger-ui.html</code>. Every endpoint you have written appears in
+    the list. If yours is not there, Spring never registered it, and the problem is in the labels,
+    not in your logic.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer><div class="wrap">Every example here is taken from the running project. Companion to the
+beginner guide, which explains the surrounding ideas.</div></footer>
+</body>
+</html>
